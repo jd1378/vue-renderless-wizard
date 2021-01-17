@@ -34,20 +34,26 @@ export default {
         return accumulator;
       }, 0);
     },
+    hasNext() {
+      return this.currentStep < this.stepsCount;
+    },
+    hasPrev() {
+      return this.currentStep > 1;
+    },
   },
   created() {
     this.currentStep = this.startingStep;
   },
   methods: {
     next() {
-      if (this.currentStep < this.stepsCount) {
+      if (this.hasNext) {
         this.currentStep++;
         return true;
       }
       return false;
     },
     prev() {
-      if (this.currentStep > 1) {
+      if (this.hasPrev) {
         this.currentStep--;
         return true;
       }
@@ -79,6 +85,8 @@ export default {
    * @binding {number} stepsCount
    * @binding {function} setStep Emits `setStep` event and goes to given step
    * @binding {reset} reset Emits a `reset` event and goes to first step
+   * @binding {boolean} hasNext
+   * @binding {boolean} hasPrev
    */
   /**
    * The container of steps. you can use this slot to wrap the steps you define with the content of this slot.
@@ -91,6 +99,8 @@ export default {
    * @binding {number} stepsCount
    * @binding {function} setStep Emits `setStep` event and goes to given step
    * @binding {reset} reset Emits a `reset` event and goes to first step
+   * @binding {boolean} hasNext
+   * @binding {boolean} hasPrev
    */
   render(h) {
     let vnodes;
@@ -103,6 +113,8 @@ export default {
         stepsCount: this.stepsCount,
         setStep: this.setStep,
         reset: this.reset,
+        hasNext: this.hasNext,
+        hasPrev: this.hasPrev,
       });
     }
 
@@ -116,6 +128,8 @@ export default {
           prev: this.prev,
           setStep: this.setStep,
           reset: this.reset,
+          hasNext: this.hasNext,
+          hasPrev: this.hasPrev,
         });
         return containerVNode;
       }
