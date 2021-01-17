@@ -18,8 +18,8 @@ export default Vue.extend({
       <template #container="wizard">
         <WizardContainer :wizard="wizard" />
       </template>
-      <template #step-0>
-        <div>step 0</div>
+      <template #step-1>
+        <div>step 1</div>
       </template>
     </VueRenderlessWizard>
   </div>
