@@ -93,10 +93,10 @@ export default {
    * @binding {reset} reset Emits a `reset` event and goes to first step
    */
   render(h) {
-    let stepVNodes;
+    let vnodes;
 
     if (this.$scopedSlots['step-' + this.currentStep]) {
-      stepVNodes = this.$scopedSlots['step-' + this.currentStep]({
+      vnodes = this.$scopedSlots['step-' + this.currentStep]({
         next: this.next,
         prev: this.prev,
         currentStep: this.currentStep,
@@ -106,10 +106,10 @@ export default {
       });
     }
 
-    if (stepVNodes) {
+    if (vnodes) {
       if (this.$scopedSlots.container) {
         const [containerVNode] = this.$scopedSlots.container({
-          stepVNodes,
+          vnodes,
           currentStep: this.currentStep,
           stepsCount: this.stepsCount,
           next: this.next,
@@ -119,16 +119,10 @@ export default {
         });
         return containerVNode;
       }
-      return stepVNodes;
+      return vnodes;
     }
 
     return h();
   },
-};
-
-// from https://stackoverflow.com/a/51033863/3542461
-export const VNodeRenderer = {
-  functional: true,
-  render: (h, ctx) => ctx.props.vnodes,
 };
 </script>
