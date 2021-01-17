@@ -18,3 +18,10 @@ export default {
   },
 };
 </script>
+
+<style lang="css">
+.wizard-container {
+  background: #232323;
+  color: #cdcdcd;
+}
+</style>
