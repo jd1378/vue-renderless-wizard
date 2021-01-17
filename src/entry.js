@@ -1,5 +1,6 @@
 // Import vue component
-import component, { VNodeRenderer } from '@/vue-renderless-wizard.vue';
+import component from '@/vue-renderless-wizard.vue';
+import { VNodeRenderer } from '@/v-node-renderer.js';
 // install function executed by Vue.use()
 const install = function installVueRenderlessWizard(Vue) {
   if (install.installed) return;
