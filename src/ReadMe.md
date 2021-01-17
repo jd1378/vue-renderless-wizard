@@ -1,3 +1,4 @@
+# Example 1
 
 ```vue
 <template>
@@ -6,8 +7,11 @@
       <template #container="wizard">
         <WizardContainer :wizard="wizard" />
       </template>
-      <template #step-0>
-        <div>step 0</div>
+      <template #step-1>
+        <div class="fill center">step 1</div>
+      </template>
+      <template #step-2>
+        <div class="fill center">step 2</div>
       </template>
     </VueRenderlessWizard>
   </div>
@@ -24,9 +28,20 @@ export default {
   }
 }
 </script>
+
+<style>
+.fill {
+  flex: 1 1 0;
+}
+.center {
+  display: flex;
+  justify-content:center;
+  align-items: center;
+}
+</style>
 ```
 
-check here for the content of wizard-container and the vue-renderless-wizard itself:
+check these for the content of wizard-container and the vue-renderless-wizard itself:
 
 [wizard-container.vue](https://github.com/jd1378/vue-renderless-wizard/blob/main/src/wizard-container.vue)
 
