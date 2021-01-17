@@ -5,10 +5,10 @@
     </div>
     <div class="step-controller">
       <button class="btn" :disabled="!wizard.hasPrev" @click="wizard.prev">
-        prev
+        Back
       </button>
       <button class="btn" :disabled="!wizard.hasNext" @click="wizard.next">
-        next
+        Next
       </button>
     </div>
   </div>
