@@ -12,7 +12,8 @@
     "dev": "npm run styleguide",
     "styleguide": "vue-cli-service styleguidist",
     "styleguide:build": "vue-cli-service styleguidist:build",
-    "test": "vue-cli-service test:unit"
+    "test": "vue-cli-service test:unit",
+    "prepublishOnly": "npm run build"
   },
   "main": "dist/vue-renderless-wizard.ssr.js",
   "module": "dist/vue-renderless-wizard.esm.js",
