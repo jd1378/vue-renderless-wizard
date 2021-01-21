@@ -70,5 +70,7 @@
     "type": "git",
     "url": "git@github.com:jd1378/vue-renderless-wizard.git"
   },
-  "dependencies": {}
+  "dependencies": {
+    "babel-polyfill": "^6.26.0"
+  }
 }

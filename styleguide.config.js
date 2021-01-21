@@ -26,17 +26,17 @@ module.exports = {
       sections: [
         {
           name: 'Install',
-          content: 'docs/getting-started/Install.md',
+          content: 'guide/getting-started/Install.md',
         },
         {
           name: 'Usage',
-          content: 'docs/getting-started/Usage.md',
+          content: 'guide/getting-started/Usage.md',
         },
       ],
     },
     {
       name: 'Example1',
-      content: 'docs/Example1/ReadMe.md',
+      content: 'guide/Example1/ReadMe.md',
       exampleMode: 'expand',
       simpleEditor: false,
     },
@@ -47,7 +47,7 @@ module.exports = {
     },
     {
       name: 'Credits',
-      content: 'docs/Credits.md',
+      content: 'guide/Credits.md',
     },
   ],
   updateExample(props, exampleFilePath) {
@@ -68,4 +68,5 @@ module.exports = {
     return props;
   },
   styleguideDir: 'docs',
+  require: [path.resolve(__dirname, 'guide/setup.js')],
 };
