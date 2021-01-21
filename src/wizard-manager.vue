@@ -206,7 +206,7 @@ export default {
           } else {
             step.$emit('finished', this.wizardData);
             /**
-             * Emitted when there's no next step remaining and **next()** function is called.
+             * Emitted when **next()** function has been called, there's no next step remaining and validation for current step has passed.
              * @event finished
              * @property {object} data - contains the wizard data
              */
