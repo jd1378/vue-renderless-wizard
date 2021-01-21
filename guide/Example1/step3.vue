@@ -18,6 +18,10 @@ export default {
   },
   methods: {
     validate(data) {
+      if (!data.age) {
+        alert('You must specify your age');
+        return false;
+      }
       if (data.age < 18) {
         alert('You must be 18 and over');
         return false;
