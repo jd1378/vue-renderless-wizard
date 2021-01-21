@@ -3,7 +3,7 @@ const path = require('path');
 
 module.exports = {
   title: 'vue-renderless-wizard',
-  components: 'src/vue-renderless-wizard.vue',
+  components: '-----',
   defaultExample: true,
   usageMode: 'collapse',
   exampleMode: 'expand',
