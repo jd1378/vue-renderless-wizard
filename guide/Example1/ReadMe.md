@@ -12,3 +12,5 @@ Wizard Container:
 ```
 
 Note that wizard-container is for illustration purposes and is not bundled with vue-renderless-wizard
+
+Source for Example1 is found here: <https://github.com/jd1378/vue-renderless-wizard/tree/main/guide/Example1>
