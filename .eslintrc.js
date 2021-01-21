@@ -4,7 +4,6 @@ module.exports = {
     node: true,
     browser: true,
   },
-  exclude: ['docs'],
   parserOptions: {
     parser: 'babel-eslint',
     sourceType: 'module',
