@@ -4,3 +4,4 @@ This component hopefully abstracts away some of the wizard creating boilerplate.
 
 Check the docs for more info:
 
+<https://jd1378.github.io/vue-renderless-wizard/>
