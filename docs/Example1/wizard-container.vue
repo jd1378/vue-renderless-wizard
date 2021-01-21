@@ -1,32 +1,25 @@
 <template>
   <div class="wizard-container">
     <div class="step-content">
-      <VNodeRenderer :vnodes="wizard.vnodes" />
+      <slot></slot>
     </div>
     <div class="step-controller">
-      <button class="btn" :disabled="!wizard.hasPrev" @click="wizard.prev">
+      <button class="btn" :disabled="!scope.hasPrev" @click="scope.prev">
         Back
       </button>
-      <button class="btn" :disabled="!wizard.hasNext" @click="wizard.next">
-        Next
+      <div class="center">
+        Step {{ scope.currentStep }} of {{ scope.stepsCount }}
+      </div>
+      <button class="btn" @click="scope.next">
+        {{ scope.hasNext ? 'Next' : 'Finish' }}
       </button>
     </div>
   </div>
 </template>
 
 <script>
-import VNodeRenderer from '@/v-node-renderer.js';
-
 export default {
-  components: {
-    VNodeRenderer,
-  },
-  props: {
-    wizard: {
-      type: Object,
-      required: true,
-    },
-  },
+  props: ['scope'],
 };
 </script>
 
@@ -46,7 +39,9 @@ export default {
 
 .step-content {
   display: flex;
+  position: relative;
   flex: 1 1 0;
+  overflow: hidden;
 }
 
 .step-controller {
@@ -54,13 +49,5 @@ export default {
   display: flex;
   justify-content: space-between;
   padding: 0.8rem;
-}
-
-.btn {
-  border-radius: 5px;
-  border: #7a7a7a;
-  box-shadow: 0px 0px 1px 0px rgba(35, 35, 35, 0.3);
-  font-size: 1.2rem;
-  padding: 0.5rem 2rem;
 }
 </style>

@@ -1,11 +1,12 @@
 // Import vue component
-import component from '@/vue-renderless-wizard.vue';
-import { VNodeRenderer } from '@/v-node-renderer.js';
+import WizardManager from '@/wizard-manager.vue';
+import WizardStep from '@/wizard-step.vue';
 // install function executed by Vue.use()
 const install = function installVueRenderlessWizard(Vue) {
   if (install.installed) return;
   install.installed = true;
-  Vue.component('VueRenderlessWizard', component);
+  Vue.component('WizardManager', WizardManager);
+  Vue.component('WizardStep', WizardStep);
 };
 
 // Create module definition for Vue.use()
@@ -28,11 +29,11 @@ if (GlobalVue) {
 
 // Inject install function into component - allows component
 // to be registered via Vue.use() as well as Vue.component()
-component.install = install;
+WizardManager.install = install;
 
 // Export component by default
-export default component;
-export { VNodeRenderer };
+export default WizardManager;
+export { WizardManager, WizardStep };
 
 // It's possible to expose named exports when writing components that can
 // also be used as directives, etc. - eg. import { RollupDemoDirective } from 'rollup-demo';

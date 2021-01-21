@@ -1,34 +1,25 @@
 <script>
 import Vue from 'vue';
-import VueRenderlessWizard from '@/vue-renderless-wizard.vue';
-import WizardContainer from '@/wizard-container.vue';
+import Example1 from '../docs/Example1/Example1';
 
 export default Vue.extend({
   name: 'ServeDev',
   components: {
-    VueRenderlessWizard,
-    WizardContainer,
+    Example1,
   },
 });
 </script>
 
 <template>
   <div id="app">
-    <VueRenderlessWizard>
-      <template #container="wizard">
-        <WizardContainer :wizard="wizard" />
-      </template>
-      <template #step-1>
-        <div>step 1</div>
-      </template>
-    </VueRenderlessWizard>
+    <Example1 />
   </div>
 </template>
 
 <style lang="css">
 html {
-  background: #232323;
-  color: #cdcdcd;
+  /* background: #232323;
+  color: #cdcdcd; */
   font-family: 'Avenir Next', 'Avenir', sans-serif;
 }
 

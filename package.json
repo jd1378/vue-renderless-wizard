@@ -11,7 +11,8 @@
     "build:unpkg": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format iife",
     "dev": "npm run styleguide",
     "styleguide": "vue-cli-service styleguidist",
-    "styleguide:build": "vue-cli-service styleguidist:build"
+    "styleguide:build": "vue-cli-service styleguidist:build",
+    "test": "vue-cli-service test:unit"
   },
   "main": "dist/vue-renderless-wizard.ssr.js",
   "module": "dist/vue-renderless-wizard.esm.js",
@@ -29,8 +30,11 @@
     "@rollup/plugin-commonjs": "^11.0.1",
     "@rollup/plugin-replace": "^2.3.4",
     "@vue/cli-plugin-babel": "^4.5.10",
+    "@vue/cli-plugin-unit-jest": "^4.5.10",
     "@vue/cli-service": "^4.5.10",
+    "@vue/test-utils": "^1.1.2",
     "babel-eslint": "^10.1.0",
+    "babel-jest": "^26.6.3",
     "cross-env": "^7.0.3",
     "eslint": "^7.18.0",
     "eslint-config-prettier": "^7.1.0",
@@ -57,11 +61,14 @@
     "vue",
     "renderless",
     "wizard",
-    "stepper"
+    "stepper",
+    "steps",
+    "component"
   ],
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git@github.com:jd1378/vue-renderless-wizard.git"
-  }
+  },
+  "dependencies": {}
 }
