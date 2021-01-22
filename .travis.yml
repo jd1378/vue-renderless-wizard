@@ -8,7 +8,7 @@ install:
   - yarn add codecov
 
 script:
-  - npm run test
+  - yarn test
 
 after_success:
   - codecov
