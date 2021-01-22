@@ -33,9 +33,12 @@ describe('entry file', () => {
       expect(vueMock.component).toBeCalledTimes(2);
       expect(vueMock.component).toBeCalledWith(
         'WizardManager',
-        expect.anything()
+        entryExports.WizardManager
       );
-      expect(vueMock.component).toBeCalledWith('WizardStep', expect.anything());
+      expect(vueMock.component).toBeCalledWith(
+        'WizardStep',
+        entryExports.WizardStep
+      );
       // try install again
       entryExports.install(vueMock);
       expect(vueMock.component).toBeCalledTimes(2);
