@@ -10,5 +10,12 @@ install:
 script:
   - yarn test
 
+deploy:
+  provider: npm
+  edge: true # opt in to dpl v2
+  on:
+    branch: main
+    tags: true
+
 after_success:
   - codecov
