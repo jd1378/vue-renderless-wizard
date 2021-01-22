@@ -1,7 +1,7 @@
 <script>
 import { toInteger } from './utils/number';
 import { isFunction } from './utils/inspect';
-import { cloneDeep } from './utils/cloneDeep';
+import { cloneDeep } from './utils/clone-deep';
 import { notDisabled, disabled } from './utils/filters';
 
 /**
