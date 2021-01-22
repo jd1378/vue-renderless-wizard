@@ -11,8 +11,11 @@ module.exports = {
   },
   snapshotSerializers: ['jest-serializer-vue'],
   testMatch: [
-    '<rootDir>/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)',
+    '<rootDir>/**/*.(spec|test).(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)',
   ],
   coverageDirectory: './coverage/',
   collectCoverage: true,
+  collectCoverageFrom: [
+    '<rootDir>/src/**/{!(test|spec|serve-dev),}.(js|jsx|ts|tsx|vue)',
+  ],
 };
