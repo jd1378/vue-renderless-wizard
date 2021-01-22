@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
     "baseUrl": "./src",
-    "module": "es6",
+    "module": "es2020",
     "paths": {
       "@/*": ["./*"],
-    }
+    },
   },
   "exclude": ["node_modules", "dist"]
 }

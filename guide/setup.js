@@ -1,1 +1,2 @@
-import 'babel-polyfill';
+// not using anymore
+// import 'babel-polyfill';

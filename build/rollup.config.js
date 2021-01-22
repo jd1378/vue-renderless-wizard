@@ -5,7 +5,7 @@ import vue from 'rollup-plugin-vue';
 import alias from '@rollup/plugin-alias';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
-import babel from 'rollup-plugin-babel';
+import { babel } from '@rollup/plugin-babel';
 import { terser } from 'rollup-plugin-terser';
 import minimist from 'minimist';
 
@@ -41,7 +41,7 @@ const baseConfig = {
       },
     },
     babel: {
-      exclude: 'node_modules/**',
+      babelHelpers: 'runtime',
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.vue'],
     },
   },
@@ -68,7 +68,7 @@ const buildFormats = [];
 if (!argv.format || argv.format === 'es') {
   const esConfig = {
     ...baseConfig,
-    external,
+    external: [...external, [/@babel\/runtime/]],
     output: {
       file: 'dist/vue-renderless-wizard.esm.js',
       format: 'esm',
@@ -97,7 +97,7 @@ if (!argv.format || argv.format === 'es') {
 if (!argv.format || argv.format === 'cjs') {
   const umdConfig = {
     ...baseConfig,
-    external,
+    external: [...external, [/@babel\/runtime/]],
     output: {
       compact: true,
       file: 'dist/vue-renderless-wizard.ssr.js',
