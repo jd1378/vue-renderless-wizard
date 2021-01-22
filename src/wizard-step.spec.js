@@ -38,6 +38,74 @@ describe('wizard-step', () => {
     });
   });
 
+  describe('render', () => {
+    it('renders fine in absence of wizard manager', () => {
+      const transitionStub = () => ({
+        render: function () {
+          return this.$options._renderChildren;
+        },
+      });
+      const wrapper = mount(WizardStep, {
+        slots: {
+          default: scopedDefault,
+        },
+        stubs: {
+          transition: transitionStub(),
+        },
+      });
+      expect(wrapper.html()).toBe('<div>step 0</div>');
+      let errored = false;
+      try {
+        wrapper.destroy();
+      } catch (err) {
+        errored = true;
+      }
+      expect(errored).toBe(false);
+    });
+
+    it('renders if lazy and active', () => {
+      const transitionStub = () => ({
+        render: function () {
+          return this.$options._renderChildren;
+        },
+      });
+      const wrapper = mount(WizardStep, {
+        propsData: {
+          lazy: true,
+          active: true,
+        },
+        slots: {
+          default: scopedDefault,
+        },
+        stubs: {
+          transition: transitionStub(),
+        },
+      });
+      expect(wrapper.html()).toBe('<div>step 0</div>');
+    });
+
+    it("doesn't render if lazy and not active", () => {
+      const transitionStub = () => ({
+        render: function () {
+          return this.$options._renderChildren;
+        },
+      });
+      const wrapper = mount(WizardStep, {
+        propsData: {
+          lazy: true,
+          active: false,
+        },
+        slots: {
+          default: scopedDefault,
+        },
+        stubs: {
+          transition: transitionStub(),
+        },
+      });
+      expect(wrapper.html()).toBe('');
+    });
+  });
+
   describe('events', () => {
     let wrapper;
 
