@@ -53,10 +53,6 @@ export default {
     };
   },
   computed: {
-    // For parent sniffing of child
-    _isStep() {
-      return true;
-    },
     computedLazy() {
       return this.wizardManager.lazy || this.lazy;
     },
