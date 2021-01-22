@@ -4,7 +4,8 @@ node_js:
  - "node"
 
 install:
-  - npm install -g codecov
+  - yarn
+  - yarn add codecov
 
 script:
   - npm run test
