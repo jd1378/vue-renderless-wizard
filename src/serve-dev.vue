@@ -1,6 +1,6 @@
 <script>
 import Vue from 'vue';
-import Example1 from '../docs/Example1/Example1';
+import Example1 from '../guide/Example1/Example1';
 
 export default Vue.extend({
   name: 'ServeDev',
