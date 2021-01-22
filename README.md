@@ -1,5 +1,7 @@
 # vue-renderless-wizard
 
+[![HitCount](http://hits.dwyl.com/jd1378/vue-renderless-wizard.svg)](http://hits.dwyl.com/jd1378/vue-renderless-wizard)
+
 This component hopefully abstracts away some of the wizard creating boilerplate.
 
 Check the docs for more info:
