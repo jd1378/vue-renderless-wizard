@@ -18,22 +18,21 @@ const plugin = {
 // eslint-disable-next-line no-redeclare
 /* global window, global */
 let GlobalVue = null;
+/* istanbul ignore next */
 if (typeof window !== 'undefined') {
   GlobalVue = window.Vue;
 } else if (typeof global !== 'undefined') {
   GlobalVue = global.Vue;
 }
+/* istanbul ignore next */
 if (GlobalVue) {
   GlobalVue.use(plugin);
 }
 
-// Inject install function into component - allows component
-// to be registered via Vue.use() as well as Vue.component()
-WizardManager.install = install;
-
-// Export component by default
-export default WizardManager;
-export { WizardManager, WizardStep };
+// export install function in default export
+// to be able to be registered via Vue.use()
+export default { WizardManager, WizardStep, install };
+export { WizardManager, WizardStep, install };
 
 // It's possible to expose named exports when writing components that can
 // also be used as directives, etc. - eg. import { RollupDemoDirective } from 'rollup-demo';
