@@ -1,6 +1,6 @@
 {
   "name": "vue-renderless-wizard",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "a renderless wizard/stepper component for vue",
   "author": "jd1378",
   "scripts": {
