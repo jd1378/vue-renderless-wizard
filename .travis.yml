@@ -12,6 +12,7 @@ script:
 
 deploy:
   provider: npm
+  api_token: $NPM_API_TOKEN
   edge: true # opt in to dpl v2
   on:
     branch: main
