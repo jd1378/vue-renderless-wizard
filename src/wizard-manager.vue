@@ -163,7 +163,9 @@ export default {
         step.localActive = index === stepIndex;
       });
 
-      this.currentStep = stepIndex;
+      if (stepIndex !== -1) {
+        this.currentStep = stepIndex;
+      }
     },
     registerStep(step) {
       if (!this.steps.includes(step)) {
@@ -224,7 +226,7 @@ export default {
       });
     },
     setStep(index) {
-      this.activateStep(this.steps[index]);
+      return this.activateStep(this.steps[index]);
     },
     activateStep(step) {
       const { currentStep, steps } = this;
@@ -290,7 +292,7 @@ export default {
    * @binding {function(boolean: bypassValidation)} next - Proceed to next step
    * @binding {function} prev - Proceed to previous step
    * @binding {function(index: number)} setStep - Directly go to a step by index.
-   * @binding {reset} reset - Emits a `reset` event, restores `initial-data` prop and goes to first step
+   * @binding {function} reset - Emits a `reset` event, restores `initial-data` prop and goes to first step
    * @binding {boolean} hasNext
    * @binding {boolean} hasPrev
    * @binding {boolean} validating - if a validation check is in progress

@@ -2,10 +2,6 @@ import { mount } from '@vue/test-utils';
 import WizardStep from './wizard-step.vue';
 
 describe('wizard-step', () => {
-  const scopedDefault = {
-    template: `<div>step 0</div>`,
-  };
-
   describe('wizard manager registeration', () => {
     let wrapper;
     let registerStep;
@@ -22,7 +18,7 @@ describe('wizard-step', () => {
           },
         },
         slots: {
-          default: scopedDefault,
+          default: '<div>step 0</div>',
         },
       });
     });
@@ -47,7 +43,7 @@ describe('wizard-step', () => {
       });
       const wrapper = mount(WizardStep, {
         slots: {
-          default: scopedDefault,
+          default: '<div>step 0</div>',
         },
         stubs: {
           transition: transitionStub(),
@@ -75,7 +71,7 @@ describe('wizard-step', () => {
           active: true,
         },
         slots: {
-          default: scopedDefault,
+          default: '<div>step 0</div>',
         },
         stubs: {
           transition: transitionStub(),
@@ -96,7 +92,7 @@ describe('wizard-step', () => {
           active: false,
         },
         slots: {
-          default: scopedDefault,
+          default: '<div>step 0</div>',
         },
         stubs: {
           transition: transitionStub(),
@@ -106,13 +102,98 @@ describe('wizard-step', () => {
     });
   });
 
+  describe('scoped slot', () => {
+    let scopeProps;
+
+    function renderDefault(props) {
+      scopeProps = props;
+      return this.$createElement('div', 'step 0');
+    }
+
+    beforeEach(() => {
+      scopeProps = {};
+      mount(WizardStep, {
+        provide: {
+          wizardManager: {
+            availableStepProgress: 0,
+            currentStep: 0,
+            availableSteps: 1,
+            stepsCount: 1,
+            next: () => Promise.resolve(false),
+            prev: () => false,
+            setStep: () => false,
+            reset: () => undefined,
+            hasNext: false,
+            hasPrev: false,
+            data: {},
+            validating: false,
+            backwarding: false,
+          },
+        },
+        propsData: {
+          active: true,
+        },
+        scopedSlots: {
+          default: renderDefault,
+        },
+      });
+    });
+
+    it('has active prop', () => {
+      expect(scopeProps).toHaveProperty('active');
+    });
+    it('has currentStep prop', () => {
+      expect(scopeProps).toHaveProperty('currentStep');
+    });
+    it('has currentStepIndex prop', () => {
+      expect(scopeProps).toHaveProperty('currentStepIndex');
+    });
+    it('has stepsCount prop', () => {
+      expect(scopeProps).toHaveProperty('stepsCount');
+    });
+    it('has realStepsCount prop', () => {
+      expect(scopeProps).toHaveProperty('realStepsCount');
+    });
+    it('has next function', () => {
+      expect(scopeProps).toHaveProperty('next');
+      expect(scopeProps.next).toBeInstanceOf(Function);
+    });
+    it('has prev function', () => {
+      expect(scopeProps).toHaveProperty('prev');
+      expect(scopeProps.prev).toBeInstanceOf(Function);
+    });
+    it('has setStep function', () => {
+      expect(scopeProps).toHaveProperty('setStep');
+      expect(scopeProps.setStep).toBeInstanceOf(Function);
+    });
+    it('has reset function', () => {
+      expect(scopeProps).toHaveProperty('reset');
+      expect(scopeProps.reset).toBeInstanceOf(Function);
+    });
+    it('has hasNext prop', () => {
+      expect(scopeProps).toHaveProperty('hasNext');
+    });
+    it('has hasPrev prop', () => {
+      expect(scopeProps).toHaveProperty('hasPrev');
+    });
+    it('has data prop', () => {
+      expect(scopeProps).toHaveProperty('data');
+    });
+    it('has validating prop', () => {
+      expect(scopeProps).toHaveProperty('validating');
+    });
+    it('has backwarding prop', () => {
+      expect(scopeProps).toHaveProperty('backwarding');
+    });
+  });
+
   describe('events', () => {
     let wrapper;
 
     beforeEach(() => {
       wrapper = mount(WizardStep, {
         slots: {
-          default: scopedDefault,
+          default: '<div>step 0</div>',
         },
       });
     });
@@ -144,7 +225,7 @@ describe('wizard-step', () => {
             };
           },
           slots: {
-            default: scopedDefault,
+            default: '<div>step 0</div>',
           },
         });
         expect(getTransition).toBeCalled();
@@ -170,7 +251,7 @@ describe('wizard-step', () => {
             },
           },
           slots: {
-            default: scopedDefault,
+            default: '<div>step 0</div>',
           },
           stubs: {
             transition: transitionStub(),
