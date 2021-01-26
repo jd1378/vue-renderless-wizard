@@ -9,9 +9,47 @@ describe('wizard-manager', () => {
     return this.$createElement('div', 'manager');
   }
 
-  beforeEach(() => {
+  function cleanup() {
     scopeProps = {};
     wrapper = {};
+  }
+  function destroy() {
+    if (wrapper && wrapper.destroy) {
+      wrapper.destroy();
+    }
+    wrapper = undefined;
+    scopeProps = undefined;
+  }
+
+  beforeEach(cleanup);
+  afterEach(destroy);
+
+  it('provides itself', () => {
+    let injected;
+    const childComponent = {
+      inject: {
+        wizardManager: {
+          default: () => false,
+        },
+      },
+      template: '<div>test</div>',
+      mounted() {
+        injected = this.wizardManager;
+      },
+    };
+
+    const parentComponent = {
+      components: {
+        childComponent,
+        WizardManager,
+      },
+      template: '<WizardManager><child-component/></WizardManager>',
+    };
+
+    wrapper = mount(parentComponent);
+    expect(wrapper.html()).toBe('<div>test</div>');
+    expect(injected).toBeTruthy();
+    expect(injected).toHaveProperty('currentStep');
   });
 
   describe('render', () => {
