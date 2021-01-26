@@ -151,6 +151,13 @@ describe('wizard-manager', () => {
 
   describe('props', () => {
     describe('value', () => {
+      it('only accepts number values over 0', () => {
+        const validator = WizardManager.props.value.validator;
+        expect(validator(-1)).toBe(false);
+        expect(validator(0)).toBe(true);
+        expect(validator('str')).toBe(false);
+      });
+
       it('is the default `currentStep` index of wizard', () => {
         let wrapper = mount(WizardManager, {
           propsData: {
