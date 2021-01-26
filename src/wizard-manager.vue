@@ -121,6 +121,9 @@ export default {
       // Update the v-model
       this.$emit('input', index);
     },
+    steps() {
+      this.updateSteps();
+    },
   },
   mounted() {
     this.updateSteps();
