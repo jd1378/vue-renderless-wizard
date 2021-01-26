@@ -101,9 +101,9 @@ export default {
         } else {
           // Try next or prev steps
           if (newValue < oldValue) {
-            this.previousStep();
+            this.activateStep(this.prevStep);
           } else {
-            this.nextStep();
+            this.activateStep(this.nextStep);
           }
         }
       }
