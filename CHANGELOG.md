@@ -1,6 +1,10 @@
 # Changelog
 
-## 1.0.6 
+## 1.0.7
+
+- removes unnecessary import
+
+## 1.0.6
 
 - fixed the case where the new value set by v-model was less than the old value but the prevStep was not called.
 
