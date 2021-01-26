@@ -15,7 +15,6 @@ module.exports = {
   ],
   coverageDirectory: './coverage/',
   collectCoverage: true,
-  coverageReporters: ['html', 'lcov'],
   collectCoverageFrom: [
     '<rootDir>/src/**/{!(test|spec|serve-dev),}.(js|jsx|ts|tsx|vue)',
   ],
