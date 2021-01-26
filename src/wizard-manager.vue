@@ -72,9 +72,6 @@ export default {
           .length + 1
       );
     },
-    disabledBehind() {
-      return this.steps.slice(0, this.currentStep).filter(disabled).length;
-    },
     nextStep() {
       return this.steps.slice(this.currentStep + 1).find(notDisabled);
     },
