@@ -1,60 +1,44 @@
 import { mount } from '@vue/test-utils';
 import WizardManager from './wizard-manager.vue';
 
+function renderEmpty() {
+  return this.$createElement();
+}
+
 describe('wizard-manager', () => {
-  let scopeProps = {};
-  let wrapper;
-  function renderDefault(props) {
-    scopeProps = props;
-    return this.$createElement('div', 'manager');
-  }
-
-  function cleanup() {
-    scopeProps = {};
-    wrapper = {};
-  }
-  function destroy() {
-    if (wrapper && wrapper.destroy) {
-      wrapper.destroy();
-    }
-    wrapper = undefined;
-    scopeProps = undefined;
-  }
-
-  beforeEach(cleanup);
-  afterEach(destroy);
-
-  it('provides itself', () => {
-    let injected;
-    const childComponent = {
-      inject: {
-        wizardManager: {
-          default: () => false,
+  describe('injection', () => {
+    it('provides itself', () => {
+      let injected;
+      const childComponent = {
+        inject: {
+          wizardManager: {
+            default: () => false,
+          },
         },
-      },
-      template: '<div>test</div>',
-      mounted() {
-        injected = this.wizardManager;
-      },
-    };
+        template: '<div>test</div>',
+        mounted() {
+          injected = this.wizardManager;
+        },
+      };
 
-    const parentComponent = {
-      components: {
-        childComponent,
-        WizardManager,
-      },
-      template: '<WizardManager><child-component/></WizardManager>',
-    };
+      const parentComponent = {
+        components: {
+          childComponent,
+          WizardManager,
+        },
+        template: '<WizardManager><child-component/></WizardManager>',
+      };
 
-    wrapper = mount(parentComponent);
-    expect(wrapper.html()).toBe('<div>test</div>');
-    expect(injected).toBeTruthy();
-    expect(injected).toHaveProperty('currentStep');
+      const wrapper = mount(parentComponent);
+      expect(wrapper.html()).toBe('<div>test</div>');
+      expect(injected).toBeTruthy();
+      expect(injected).toHaveProperty('currentStep');
+    });
   });
 
   describe('render', () => {
     it('renders content', () => {
-      wrapper = mount(WizardManager, {
+      const wrapper = mount(WizardManager, {
         slots: {
           default: '<div>manager</div>',
         },
@@ -64,12 +48,22 @@ describe('wizard-manager', () => {
   });
 
   describe('scoped slot', () => {
-    beforeEach(() => {
-      wrapper = mount(WizardManager, {
-        scopedSlots: {
-          default: renderDefault,
+    let scopeProps = {};
+
+    function renderDefault(props) {
+      scopeProps = props;
+      return this.$createElement('div', 'manager');
+    }
+
+    const wrapper = mount(WizardManager, {
+      scopedSlots: {
+        default: renderDefault,
+      },
+      propsData: {
+        initialData: {
+          foo: 'bar',
         },
-      });
+      },
     });
 
     it('has currentStep prop', () => {
@@ -118,11 +112,7 @@ describe('wizard-manager', () => {
 
     describe('reset function', () => {
       it('emits reset event when successful', async () => {
-        wrapper = mount(WizardManager, {
-          scopedSlots: {
-            default: renderDefault,
-          },
-        });
+        expect(wrapper.emitted().reset).toBeFalsy();
         scopeProps.reset();
         await wrapper.vm.$nextTick();
         expect(wrapper.emitted().reset).toBeTruthy();
@@ -130,16 +120,6 @@ describe('wizard-manager', () => {
       });
 
       it('resets to initial data when successful', async () => {
-        wrapper = mount(WizardManager, {
-          propsData: {
-            initialData: {
-              foo: 'bar',
-            },
-          },
-          scopedSlots: {
-            default: renderDefault,
-          },
-        });
         scopeProps.data.foo = 'rab'; // change data throup scope props
         scopeProps.reset();
         await wrapper.vm.$nextTick();
@@ -155,8 +135,8 @@ describe('wizard-manager', () => {
 
     beforeEach(() => {
       wrapper = mount(WizardManager, {
-        slots: {
-          default: '<div>manager</div>',
+        scopedSlots: {
+          default: renderEmpty,
         },
       });
     });
@@ -170,25 +150,47 @@ describe('wizard-manager', () => {
   });
 
   describe('props', () => {
-    beforeEach(() => {
-      wrapper = mount(WizardManager, {
-        propsData: {
-          initialData: {
-            a: 'b',
-            c: 'd',
+    describe('value', () => {
+      it('is the default `currentStep` index of wizard', () => {
+        let wrapper = mount(WizardManager, {
+          propsData: {
+            value: 99,
           },
-        },
-        scopedSlots: {
-          default: renderDefault,
-        },
+          scopedSlots: {
+            default: renderEmpty,
+          },
+        });
+        expect(wrapper.vm.currentStep).toBe(99);
       });
     });
 
-    it('uses `initialData` prop in slot scope', () => {
-      expect(scopeProps).toBeTruthy();
-      expect(scopeProps.data).toStrictEqual({
-        a: 'b',
-        c: 'd',
+    describe('initialData', () => {
+      let scopeProps;
+      function renderDefault(props) {
+        scopeProps = props;
+        return this.$createElement('div', 'manager');
+      }
+
+      beforeEach(() => {
+        mount(WizardManager, {
+          propsData: {
+            initialData: {
+              a: 'b',
+              c: 'd',
+            },
+          },
+          scopedSlots: {
+            default: renderDefault,
+          },
+        });
+      });
+
+      it('is provided as data in slot scope', () => {
+        expect(scopeProps).toBeTruthy();
+        expect(scopeProps.data).toStrictEqual({
+          a: 'b',
+          c: 'd',
+        });
       });
     });
   });
