@@ -376,6 +376,7 @@ describe('integration of steps and wizard', () => {
 
       expect(wrapper.vm.steps).toBeTruthy();
       expect(wrapper.vm.steps.length).toBe(3);
+      expect(spy).toHaveBeenCalledTimes(0);
       shouldRemove = true;
       await wrapper.vm.$nextTick();
       expect(wrapper.vm.steps.length).toBe(2);
@@ -501,6 +502,119 @@ describe('integration of steps and wizard', () => {
       expect(resolved).toBe(true);
       expect(wrapper.vm.validating).toBe(false);
       expect(wrapper.vm.currentStep).toBe(2);
+    });
+  });
+
+  describe('scope hasNext prop', () => {
+    let scopeProps = {};
+    let wrapper;
+    let shouldRemove = false;
+
+    function renderDefault(props) {
+      scopeProps = props;
+      return this.$createElement('div', [
+        this.$createElement(
+          WizardStep,
+          {
+            props: {
+              active: true,
+            },
+          },
+          [this.$createElement('div', 'step1')]
+        ),
+        this.$createElement(
+          WizardStep,
+          {
+            props: {
+              disabled: true,
+            },
+          },
+          [this.$createElement('div', 'step2')]
+        ),
+        shouldRemove
+          ? this.$createElement()
+          : this.$createElement(WizardStep, [
+              this.$createElement('div', 'step3'),
+            ]),
+      ]);
+    }
+    wrapper = mount(WizardManager, {
+      scopedSlots: {
+        default: renderDefault,
+      },
+    });
+
+    it('returns true whether if theres a not-disabled step after this step', async () => {
+      expect(shouldRemove).toBe(false);
+      expect(scopeProps.stepsCount).toBe(2);
+      expect(wrapper.vm.steps.length).toBe(3);
+      expect(scopeProps.hasNext).toBe(true);
+      shouldRemove = true;
+      await wrapper.vm.$forceUpdate();
+      expect(wrapper.vm.steps.length).toBe(2);
+      expect(scopeProps.stepsCount).toBe(1);
+      expect(scopeProps.hasNext).toBe(false);
+    });
+
+    afterAll(() => {
+      wrapper.destroy();
+    });
+  });
+
+  describe('scope hasPrev prop', () => {
+    let scopeProps = {};
+    let wrapper;
+    let shouldRemove = false;
+
+    function renderDefault(props) {
+      scopeProps = props;
+      return this.$createElement('div', [
+        shouldRemove
+          ? this.$createElement()
+          : this.$createElement(WizardStep, [
+              this.$createElement('div', 'step1'),
+            ]),
+        this.$createElement(
+          WizardStep,
+          {
+            props: {
+              disabled: true,
+            },
+          },
+          [this.$createElement('div', 'step2')]
+        ),
+        this.$createElement(
+          WizardStep,
+          {
+            props: {
+              active: true,
+            },
+          },
+          [this.$createElement('div', 'step3')]
+        ),
+      ]);
+    }
+    wrapper = mount(WizardManager, {
+      scopedSlots: {
+        default: renderDefault,
+      },
+    });
+
+    it('returns whether if theres a not-disabled step after this step', async () => {
+      expect(shouldRemove).toBe(false);
+      expect(scopeProps.stepsCount).toBe(2);
+      expect(wrapper.vm.steps.length).toBe(3);
+      expect(scopeProps.hasPrev).toBe(true);
+      shouldRemove = true;
+      await wrapper.vm.$forceUpdate();
+      expect(wrapper.vm.steps.length).toBe(2);
+      expect(scopeProps.stepsCount).toBe(1);
+      expect(wrapper.vm.currentStep).toBe(1);
+      expect(scopeProps.hasPrev).toBe(false);
+    });
+
+    afterAll(() => {
+      wrapper.destroy();
     });
   });
 
