@@ -32,6 +32,10 @@ module.exports = {
           name: 'Usage',
           content: 'guide/getting-started/Usage.md',
         },
+        {
+          name: 'Note',
+          content: 'guide/getting-started/Note.md',
+        },
       ],
     },
     {
