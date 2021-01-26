@@ -176,7 +176,7 @@ describe('integration of steps and wizard', () => {
       expect(wrapper.vm.$refs.manager.stepsCount).toBe(3);
     });
   });
-  describe('wizard manager v-model', () => {
+  describe('wizard manager v-model and value prop', () => {
     it('controls `currentStep` index of wizard', async () => {
       const wrapper = mount(
         // prevent mutation
@@ -207,6 +207,37 @@ describe('integration of steps and wizard', () => {
       wrapper.vm.setValue(2);
       await wrapper.vm.$nextTick();
       expect(wrapper.vm.$refs.manager.currentStep).toBe(2);
+    });
+    it('sets initial step of wizard (and after mount for render) correctly', async () => {
+      const wrapper = mount(
+        {
+          ...exampleTwoStepWizard,
+          template: `
+            <WizardManager v-model="value" ref="manager" v-on="$listeners" lazy>
+              <div>
+                <WizardStep ref="step1"><div>step1</div></WizardStep>
+                <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
+                <WizardStep ref="step2"><div>step2</div></WizardStep>
+              </div>
+            </WizardManager>
+          `,
+        },
+        {
+          data() {
+            return {
+              value: 2,
+            };
+          },
+          stubs: {
+            transition: transitionStub(),
+          },
+        }
+      );
+      expect(wrapper.vm.$refs.manager.currentStep).toBe(2);
+      await wrapper.vm.$nextTick();
+      expect(wrapper.html().replace(cleanupRegex, '')).toBe(
+        '<div><div>step2</div></div>'
+      );
     });
     describe('activating a disabled step with v-model', () => {
       it("won't activate disabled step", async () => {
