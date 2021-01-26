@@ -657,6 +657,130 @@ describe('integration of steps and wizard', () => {
       await wrapper.vm.$nextTick();
       expect(wrapper.vm.currentStep).toBe(0);
     });
+
+    it('skips disabled steps', async () => {
+      let scopeProps = {};
+      let wrapper;
+
+      function renderDefault(props) {
+        scopeProps = props;
+        return this.$createElement('div', [
+          this.$createElement(
+            WizardStep,
+            {
+              props: {
+                active: true,
+              },
+            },
+            [this.$createElement('div', 'step1')]
+          ),
+          this.$createElement(
+            WizardStep,
+            {
+              props: {
+                disabled: true,
+              },
+            },
+            [
+              this.$createElement(
+                'div',
+
+                'step2'
+              ),
+            ]
+          ),
+          this.$createElement(
+            WizardStep,
+
+            [
+              this.$createElement(
+                'div',
+
+                'step3'
+              ),
+            ]
+          ),
+        ]);
+      }
+
+      wrapper = mount(WizardManager, {
+        scopedSlots: {
+          default: renderDefault,
+        },
+      });
+
+      expect(wrapper.vm.stepsCount).toBe(3);
+      expect(wrapper.vm.currentStep).toBe(0);
+      scopeProps.next();
+      await wrapper.vm.$nextTick();
+      expect(wrapper.vm.currentStep).toBe(2);
+    });
+  });
+
+  describe('scope prev() function', () => {
+    let scopeProps = {};
+    let wrapper;
+
+    function renderDefault(props) {
+      scopeProps = props;
+      return this.$createElement('div', [
+        this.$createElement(
+          WizardStep,
+
+          [this.$createElement('div', 'step1')]
+        ),
+        this.$createElement(
+          WizardStep,
+          {
+            props: {
+              disabled: true,
+            },
+          },
+          [
+            this.$createElement(
+              'div',
+
+              'step2'
+            ),
+          ]
+        ),
+        this.$createElement(
+          WizardStep,
+          {
+            props: {
+              active: true,
+            },
+          },
+          [
+            this.$createElement(
+              'div',
+
+              'step3'
+            ),
+          ]
+        ),
+      ]);
+    }
+
+    wrapper = mount(WizardManager, {
+      scopedSlots: {
+        default: renderDefault,
+      },
+    });
+
+    it('changes backwarding to true and current step is changed to nearest not-disable step', () => {
+      expect(wrapper.vm.currentStep).toBe(2);
+      scopeProps.prev();
+      expect(wrapper.vm.backwarding).toBe(true);
+    });
+    it('skips disabled steps', async () => {
+      await wrapper.vm.$nextTick();
+      expect(wrapper.vm.currentStep).toBe(0);
+    });
+
+    afterAll(() => {
+      wrapper.destroy();
+    });
   });
 
   describe('wizard-manager events', () => {
