@@ -127,6 +127,40 @@ describe('wizard-manager', () => {
           foo: 'bar',
         });
       });
+
+      it('does not emit "reset" or set to initialData when failed', async () => {
+        let scopeProps = {};
+
+        function renderDefault(props) {
+          scopeProps = props;
+          return this.$createElement('div', 'manager');
+        }
+
+        const wrapper = mount(WizardManager, {
+          scopedSlots: {
+            default: renderDefault,
+          },
+          propsData: {
+            value: 0,
+            initialData: {
+              foo: 'bar',
+            },
+          },
+        });
+
+        wrapper.vm.currentStep = 10;
+        scopeProps.data.foo = 'rab';
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.currentStep).toBe(10);
+        expect(wrapper.emitted().reset).toBeFalsy();
+        scopeProps.reset(); // tries to set currentStep to 'value' prop but since the step doesn't exist, it fails.
+        await wrapper.vm.$nextTick();
+        expect(wrapper.emitted().reset).toBeFalsy();
+        // it has failed to reset
+        expect(scopeProps.data).toStrictEqual({
+          foo: 'rab',
+        });
+      });
     });
   });
 
