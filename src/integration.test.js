@@ -278,7 +278,7 @@ describe('integration of steps and wizard', () => {
           {
             ...exampleTwoStepWizard,
             template: `
-              <WizardManager v-model="value" ref="manager" v-on="$listeners" :lazy="lazy">
+              <WizardManager v-model="value" ref="manager" v-on="$listeners" >
                 <div>
                   <WizardStep ref="step1"><div>step1</div></WizardStep>
                   <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
@@ -310,7 +310,7 @@ describe('integration of steps and wizard', () => {
           {
             ...exampleTwoStepWizard,
             template: `
-              <WizardManager v-model="value" ref="manager" v-on="$listeners" :lazy="lazy">
+              <WizardManager v-model="value" ref="manager" v-on="$listeners">
                 <div>
                   <WizardStep ref="step1"><div>step1</div></WizardStep>
                   <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
@@ -338,6 +338,163 @@ describe('integration of steps and wizard', () => {
     });
   });
 
+  describe('scope next() function', () => {
+    it('runs step validate prop if its a function', async () => {
+      let scopeProps = {};
+      let wrapper;
+      let ranValidate = false;
+
+      function renderDefault(props) {
+        scopeProps = props;
+        return this.$createElement('div', [
+          this.$createElement(
+            WizardStep,
+            {
+              props: {
+                active: true,
+                validate: () => {
+                  ranValidate = true;
+                  return false;
+                },
+              },
+            },
+            [this.$createElement('div', 'step1')]
+          ),
+          this.$createElement(WizardStep, [
+            this.$createElement('div', 'step2'),
+          ]),
+        ]);
+      }
+
+      wrapper = mount(WizardManager, {
+        scopedSlots: {
+          default: renderDefault,
+        },
+      });
+      expect(wrapper.vm.currentStep).toBe(0);
+      scopeProps.next();
+      await wrapper.vm.$nextTick();
+      expect(wrapper.vm.currentStep).toBe(0);
+      expect(ranValidate).toBe(true);
+    });
+
+    it('awaits step validate if it returns a promise, and `validating` slot prop becomes true', async () => {
+      // enable fake times
+      jest.useFakeTimers();
+      let scopeProps = {};
+      let wrapper;
+      const timeAmountToAdvance = 300 * 1000; // ms
+
+      function renderDefault(props) {
+        scopeProps = props;
+        return this.$createElement('div', [
+          this.$createElement(
+            WizardStep,
+            {
+              props: {
+                active: true,
+                validate: () => {
+                  return new Promise((resolve) => {
+                    setTimeout(() => resolve(true), timeAmountToAdvance);
+                  });
+                },
+              },
+            },
+            [this.$createElement('div', 'step1')]
+          ),
+          this.$createElement(WizardStep, [
+            this.$createElement('div', 'step2'),
+          ]),
+        ]);
+      }
+
+      wrapper = mount(WizardManager, {
+        scopedSlots: {
+          default: renderDefault,
+        },
+      });
+      expect(wrapper.vm.currentStep).toBe(0);
+      let resolved = false;
+      scopeProps.next().then(() => {
+        resolved = true;
+      });
+      await wrapper.vm.$nextTick();
+      expect(wrapper.vm.validating).toBe(true);
+      expect(resolved).toBe(false);
+      jest.runAllTimers();
+      await wrapper.vm.$nextTick();
+      expect(resolved).toBe(true);
+      expect(wrapper.vm.validating).toBe(false);
+    });
+
+    it('bypasses step validation if called with `true`', async () => {
+      let scopeProps = {};
+      let wrapper;
+      let ranValidate = false;
+
+      function renderDefault(props) {
+        scopeProps = props;
+        return this.$createElement('div', [
+          this.$createElement(
+            WizardStep,
+            {
+              props: {
+                active: true,
+                validate: () => {
+                  ranValidate = true;
+                  return false;
+                },
+              },
+            },
+            [this.$createElement('div', 'step1')]
+          ),
+          this.$createElement(WizardStep, [
+            this.$createElement('div', 'step2'),
+          ]),
+        ]);
+      }
+
+      wrapper = mount(WizardManager, {
+        scopedSlots: {
+          default: renderDefault,
+        },
+      });
+      expect(wrapper.vm.currentStep).toBe(0);
+      scopeProps.next(true);
+      await wrapper.vm.$nextTick();
+      expect(wrapper.vm.currentStep).toBe(1);
+      expect(ranValidate).toBe(false);
+    });
+    it('does not change step if validation of step fails', async () => {
+      let scopeProps = {};
+      let wrapper;
+
+      function renderDefault(props) {
+        scopeProps = props;
+        return this.$createElement('div', [
+          this.$createElement(
+            WizardStep,
+            { props: { active: true, validate: () => false } },
+            [this.$createElement('div', 'step1')]
+          ),
+          this.$createElement(WizardStep, [
+            this.$createElement('div', 'step2'),
+          ]),
+        ]);
+      }
+
+      wrapper = mount(WizardManager, {
+        scopedSlots: {
+          default: renderDefault,
+        },
+      });
+      expect(wrapper.vm.currentStep).toBe(0);
+      scopeProps.next();
+      await wrapper.vm.$nextTick();
+      expect(wrapper.vm.currentStep).toBe(0);
+    });
+  });
+
   describe('wizard-manager events', () => {
     describe('activate-step', () => {
       it('is emitted when changing into new step and has correct structure', async () => {
@@ -347,7 +504,7 @@ describe('integration of steps and wizard', () => {
           {
             ...exampleTwoStepWizard,
             template: `
-              <WizardManager v-model="value" ref="manager" v-on="$listeners" :lazy="lazy">
+              <WizardManager v-model="value" ref="manager" v-on="$listeners">
                 <div>
                   <WizardStep ref="step1"><div>step1</div></WizardStep>
                   <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
@@ -392,7 +549,7 @@ describe('integration of steps and wizard', () => {
           {
             ...exampleTwoStepWizard,
             template: `
-              <WizardManager v-model="value" ref="manager" v-on="$listeners" :lazy="lazy">
+              <WizardManager v-model="value" ref="manager" v-on="$listeners">
                 <div>
                   <WizardStep ref="step1"><div>step1</div></WizardStep>
                   <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
@@ -424,6 +581,274 @@ describe('integration of steps and wizard', () => {
         expect(wrapper.vm.$refs.manager.currentStep).toBe(0);
         // value is updated back to what it was
         expect(wrapper.vm.value).toBe(0);
+      });
+    });
+    describe('finished', () => {
+      it('is emitted when: (in last step && next call is successful)', async () => {
+        let emittedData = false;
+        const wrapper = mount(
+          // prevent mutation
+          {
+            ...exampleTwoStepWizard,
+            template: `
+              <WizardManager ref="manager" :initialData="initialData" v-on="$listeners">
+                <div>
+                  <WizardStep ref="step1"><div>step1</div></WizardStep>
+                  <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
+                  <WizardStep ref="step2" active><div>step2</div></WizardStep>
+                </div>
+              </WizardManager>
+            `,
+          },
+          {
+            data() {
+              return {
+                initialData: {
+                  foo: 'bar',
+                },
+              };
+            },
+            stubs: {
+              transition: transitionStub(),
+            },
+            listeners: {
+              finished: (...args) => {
+                emittedData = args;
+              },
+            },
+          }
+        );
+        expect(wrapper.vm.$refs.manager.stepsCount).toBe(3); // has 3 steps (0 -> 2)
+        expect(wrapper.vm.$refs.manager.currentStep).toBe(2); // and on last step
+        expect(emittedData).toBeFalsy(); // no event yet ...
+        await wrapper.vm.$refs.manager.next();
+        await wrapper.vm.$nextTick();
+        expect(emittedData).toBeTruthy();
+      });
+      it('contains the wizard data', async () => {
+        let emittedData = false;
+        const wrapper = mount(
+          // prevent mutation
+          {
+            ...exampleTwoStepWizard,
+            template: `
+              <WizardManager ref="manager" :initialData="initialData" v-on="$listeners">
+                <div>
+                  <WizardStep ref="step1"><div>step1</div></WizardStep>
+                  <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
+                  <WizardStep ref="step2" active><div>step2</div></WizardStep>
+                </div>
+              </WizardManager>
+            `,
+          },
+          {
+            data() {
+              return {
+                initialData: {
+                  foo: 'bar',
+                },
+              };
+            },
+            stubs: {
+              transition: transitionStub(),
+            },
+            listeners: {
+              finished: (...args) => {
+                emittedData = args;
+              },
+            },
+          }
+        );
+        expect(wrapper.vm.$refs.manager.stepsCount).toBe(3); // has 3 steps (0 -> 2)
+        expect(wrapper.vm.$refs.manager.currentStep).toBe(2); // and on last step
+        expect(emittedData).toBeFalsy(); // no event yet ...
+        await wrapper.vm.$refs.manager.next();
+        await wrapper.vm.$nextTick();
+        // wizard data check
+        expect(emittedData).toBeTruthy();
+        expect(emittedData.length).toBe(1);
+        expect(emittedData[0]).toStrictEqual({
+          foo: 'bar',
+        });
+      });
+
+      it('is not emitted if step validation fails', async () => {
+        let emittedData = false;
+        const wrapper = mount(
+          // prevent mutation
+          {
+            ...exampleTwoStepWizard,
+            template: `
+                <WizardManager ref="manager" v-on="$listeners" :initialData="initialData">
+                  <div>
+                    <WizardStep ref="step1"><div>step1</div></WizardStep>
+                    <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
+                    <WizardStep ref="step2" active :validate="stepValidation"><div>step2</div></WizardStep>
+                  </div>
+                </WizardManager>
+              `,
+          },
+          {
+            data() {
+              return {
+                initialData: {
+                  foo: 'bar',
+                },
+                stepValidation: () => {
+                  return false;
+                },
+              };
+            },
+            stubs: {
+              transition: transitionStub(),
+            },
+            listeners: {
+              finished: (...args) => {
+                emittedData = args;
+              },
+            },
+          }
+        );
+        expect(wrapper.vm.$refs.manager.stepsCount).toBe(3); // has 3 steps (0 -> 2)
+        expect(wrapper.vm.$refs.manager.currentStep).toBe(2); // and on last step
+        expect(emittedData).toBeFalsy(); // no event yet ...
+        await wrapper.vm.$refs.manager.next();
+        await wrapper.vm.$nextTick();
+        expect(emittedData).toBeFalsy(); // still not emitted
+      });
+    });
+  });
+  describe('wizard-step events', () => {
+    describe('finished', () => {
+      it('is emitted when: (next call is successfull)', async () => {
+        let emittedData = false;
+        const wrapper = mount(
+          // prevent mutation
+          {
+            ...exampleTwoStepWizard,
+            template: `
+                <WizardManager ref="manager" :initialData="initialData">
+                  <div>
+                    <WizardStep ref="step1" active v-on="$listeners"><div>step1</div></WizardStep>
+                    <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
+                    <WizardStep ref="step2"><div>step2</div></WizardStep>
+                  </div>
+                </WizardManager>
+              `,
+          },
+          {
+            data() {
+              return {
+                initialData: {
+                  foo: 'bar',
+                },
+              };
+            },
+            stubs: {
+              transition: transitionStub(),
+            },
+            listeners: {
+              finished: (...args) => {
+                emittedData = args;
+              },
+            },
+          }
+        );
+        expect(wrapper.vm.$refs.manager.stepsCount).toBe(3); // has 3 steps (0 -> 2)
+        expect(wrapper.vm.$refs.manager.currentStep).toBe(0); // and on first step so not confused with manager 'finished'
+        expect(emittedData).toBeFalsy(); // no event yet ...
+        await wrapper.vm.$refs.manager.next();
+        await wrapper.vm.$nextTick();
+        expect(emittedData).toBeTruthy();
+      });
+      it('contains the wizard data', async () => {
+        let emittedData = false;
+        const wrapper = mount(
+          // prevent mutation
+          {
+            ...exampleTwoStepWizard,
+            template: `
+                <WizardManager ref="manager" :initialData="initialData">
+                  <div>
+                    <WizardStep ref="step1" active v-on="$listeners"><div>step1</div></WizardStep>
+                    <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
+                    <WizardStep ref="step2"><div>step2</div></WizardStep>
+                  </div>
+                </WizardManager>
+              `,
+          },
+          {
+            data() {
+              return {
+                initialData: {
+                  foo: 'bar',
+                },
+              };
+            },
+            stubs: {
+              transition: transitionStub(),
+            },
+            listeners: {
+              finished: (...args) => {
+                emittedData = args;
+              },
+            },
+          }
+        );
+        expect(wrapper.vm.$refs.manager.stepsCount).toBe(3); // has 3 steps (0 -> 2)
+        expect(wrapper.vm.$refs.manager.currentStep).toBe(0); // and on first step so not confused with manager 'finished'
+        expect(emittedData).toBeFalsy(); // no event yet ...
+        await wrapper.vm.$refs.manager.next();
+        await wrapper.vm.$nextTick();
+        expect(emittedData.length).toBe(1);
+        expect(emittedData[0]).toStrictEqual({
+          foo: 'bar',
+        });
+      });
+
+      it('is not emitted if step validation fails', async () => {
+        let emittedData = false;
+        const wrapper = mount(
+          // prevent mutation
+          {
+            ...exampleTwoStepWizard,
+            template: `
+                <WizardManager ref="manager" :initialData="initialData">
+                  <div>
+                    <WizardStep ref="step1" active :validate="stepValidation" v-on="$listeners"><div>step1</div></WizardStep>
+                    <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
+                    <WizardStep ref="step2"><div>step2</div></WizardStep>
+                  </div>
+                </WizardManager>
+              `,
+          },
+          {
+            data() {
+              return {
+                initialData: {
+                  foo: 'bar',
+                },
+                stepValidation: () => {
+                  return false;
+                },
+              };
+            },
+            stubs: {
+              transition: transitionStub(),
+            },
+            listeners: {
+              finished: (...args) => {
+                emittedData = args;
+              },
+            },
+          }
+        );
+        expect(wrapper.vm.$refs.manager.stepsCount).toBe(3); // has 3 steps (0 -> 2)
+        expect(wrapper.vm.$refs.manager.currentStep).toBe(0); // and on first step so not confused with manager 'finished'
+        expect(emittedData).toBeFalsy(); // no event yet ...
+        await wrapper.vm.$refs.manager.next();
+        await wrapper.vm.$nextTick();
+        expect(emittedData).toBeFalsy();
       });
     });
   });
