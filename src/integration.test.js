@@ -338,6 +338,170 @@ describe('integration of steps and wizard', () => {
     });
   });
 
+  describe('<wizard-step> beforeDestory', () => {
+    it('calls unregisterStep of <wizard-manager>', async () => {
+      let wrapper;
+      let shouldRemove = false;
+
+      function renderDefault() {
+        return this.$createElement('div', [
+          this.$createElement(WizardStep, [
+            this.$createElement('div', 'step1'),
+          ]),
+          this.$createElement(
+            WizardStep,
+            {
+              props: {
+                active: true,
+              },
+            },
+            [this.$createElement('div', 'step2')]
+          ),
+          shouldRemove
+            ? this.$createElement()
+            : this.$createElement(WizardStep, [
+                this.$createElement('div', 'step3'),
+              ]),
+        ]);
+      }
+
+      wrapper = mount(WizardManager, {
+        scopedSlots: {
+          default: renderDefault,
+        },
+      });
+      const spy = jest.spyOn(wrapper.vm, 'unregisterStep');
+
+      expect(wrapper.vm.steps).toBeTruthy();
+      expect(wrapper.vm.steps.length).toBe(3);
+      shouldRemove = true;
+      await wrapper.vm.$nextTick();
+      expect(wrapper.vm.steps.length).toBe(2);
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('before destory of wizard manager', () => {
+    it('removes reference to steps', () => {
+      let wrapper;
+
+      function renderDefault() {
+        return this.$createElement('div', [
+          this.$createElement(WizardStep, [
+            this.$createElement('div', 'step1'),
+          ]),
+          this.$createElement(
+            WizardStep,
+            {
+              props: {
+                active: true,
+              },
+            },
+            [this.$createElement('div', 'step2')]
+          ),
+          this.$createElement(WizardStep, [
+            this.$createElement('div', 'step3'),
+          ]),
+        ]);
+      }
+
+      let stepsDataInDestroy = undefined;
+
+      wrapper = mount(
+        {
+          ...WizardManager,
+          destroyed: function () {
+            stepsDataInDestroy = this.steps;
+          },
+        },
+        {
+          scopedSlots: {
+            default: renderDefault,
+          },
+        }
+      );
+
+      expect(wrapper.vm.steps).toBeTruthy();
+      expect(wrapper.vm.steps.length).toBe(3);
+      wrapper.destroy();
+      expect(stepsDataInDestroy).toBeTruthy();
+      expect(stepsDataInDestroy.length).toBe(0);
+    });
+  });
+
+  describe('scope validating prop', () => {
+    // enable fake times
+    jest.useFakeTimers();
+    let scopeProps = {};
+    let wrapper;
+    const timeAmountToAdvance = 300 * 1000; // ms
+
+    function renderDefault(props) {
+      scopeProps = props;
+      return this.$createElement('div', [
+        this.$createElement(WizardStep, [this.$createElement('div', 'step1')]),
+        this.$createElement(
+          WizardStep,
+          {
+            props: {
+              active: true,
+              validate: () => {
+                return new Promise((resolve) => {
+                  setTimeout(() => resolve(true), timeAmountToAdvance);
+                });
+              },
+            },
+          },
+          [this.$createElement('div', 'step2')]
+        ),
+        this.$createElement(WizardStep, [this.$createElement('div', 'step3')]),
+      ]);
+    }
+
+    wrapper = mount(WizardManager, {
+      scopedSlots: {
+        default: renderDefault,
+      },
+    });
+
+    let resolved = false;
+
+    it('becomes "true" during step validation', async () => {
+      expect(wrapper.vm.currentStep).toBe(1);
+
+      scopeProps.next().then(() => {
+        resolved = true;
+      });
+      await wrapper.vm.$nextTick();
+      expect(wrapper.vm.validating).toBe(true);
+      expect(resolved).toBe(false);
+      expect(wrapper.vm.currentStep).toBe(1);
+    });
+
+    it('blocks changing steps', async () => {
+      await wrapper.vm.$nextTick();
+      expect(resolved).toBe(false);
+      expect(wrapper.vm.validating).toBe(true);
+      scopeProps.prev();
+      await wrapper.vm.$nextTick();
+      // im not sure if two times are needed,
+      // but since running a code inside nextTick in prev method, doing it anyway.
+      await wrapper.vm.$nextTick();
+      expect(wrapper.vm.currentStep).toBe(1); // still on step 1
+      scopeProps.next();
+      await wrapper.vm.$nextTick();
+      expect(wrapper.vm.currentStep).toBe(1); // still on step 1
+    });
+
+    it('becomes false after step validation finishes', async () => {
+      jest.runAllTimers();
+      await wrapper.vm.$nextTick();
+      expect(resolved).toBe(true);
+      expect(wrapper.vm.validating).toBe(false);
+      expect(wrapper.vm.currentStep).toBe(2);
+    });
+  });
+
   describe('scope next() function', () => {
     it('runs step validate prop if its a function', async () => {
       let scopeProps = {};
@@ -378,7 +542,7 @@ describe('integration of steps and wizard', () => {
       expect(ranValidate).toBe(true);
     });
 
-    it('awaits step validate if it returns a promise, and `validating` slot prop becomes true', async () => {
+    it('awaits step validate if it returns a promise', async () => {
       // enable fake times
       jest.useFakeTimers();
       let scopeProps = {};
@@ -419,12 +583,10 @@ describe('integration of steps and wizard', () => {
         resolved = true;
       });
       await wrapper.vm.$nextTick();
-      expect(wrapper.vm.validating).toBe(true);
       expect(resolved).toBe(false);
       jest.runAllTimers();
       await wrapper.vm.$nextTick();
       expect(resolved).toBe(true);
-      expect(wrapper.vm.validating).toBe(false);
     });
 
     it('bypasses step validation if called with `true`', async () => {
