@@ -337,4 +337,94 @@ describe('integration of steps and wizard', () => {
       });
     });
   });
+
+  describe('wizard-manager events', () => {
+    describe('activate-step', () => {
+      it('is emitted when changing into new step and has correct structure', async () => {
+        let emittedData = false;
+        const wrapper = mount(
+          // prevent mutation
+          {
+            ...exampleTwoStepWizard,
+            template: `
+              <WizardManager v-model="value" ref="manager" v-on="$listeners" :lazy="lazy">
+                <div>
+                  <WizardStep ref="step1"><div>step1</div></WizardStep>
+                  <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
+                  <WizardStep ref="step2"><div>step2</div></WizardStep>
+                </div>
+              </WizardManager>
+            `,
+          },
+          {
+            data() {
+              return {
+                value: 0,
+              };
+            },
+            stubs: {
+              transition: transitionStub(),
+            },
+            listeners: {
+              'activate-step': (...args) => {
+                emittedData = args;
+              },
+            },
+          }
+        );
+        expect(wrapper.vm.$refs.manager.currentStep).toBe(0);
+        wrapper.vm.setValue(2);
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.$refs.manager.currentStep).toBe(2);
+        expect(emittedData).toBeTruthy();
+        expect(emittedData.length).toBe(3);
+        // first event data is current step index;
+        expect(emittedData[0]).toBe(2);
+        // second event data is the new step index;
+        expect(emittedData[1]).toBe(0);
+        // third is a cancellable event object
+        expect(emittedData[2].cancelable).toBeTruthy();
+      });
+
+      it('is emitted exactly before changing into new step and can be cancelled', async () => {
+        const wrapper = mount(
+          // prevent mutation
+          {
+            ...exampleTwoStepWizard,
+            template: `
+              <WizardManager v-model="value" ref="manager" v-on="$listeners" :lazy="lazy">
+                <div>
+                  <WizardStep ref="step1"><div>step1</div></WizardStep>
+                  <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
+                  <WizardStep ref="step2"><div>step2</div></WizardStep>
+                </div>
+              </WizardManager>
+            `,
+          },
+          {
+            data() {
+              return {
+                value: 0,
+              };
+            },
+            stubs: {
+              transition: transitionStub(),
+            },
+            listeners: {
+              'activate-step': (ni, oi, e) => {
+                e.preventDefault();
+              },
+            },
+          }
+        );
+        expect(wrapper.vm.$refs.manager.currentStep).toBe(0);
+        wrapper.vm.setValue(2);
+        await wrapper.vm.$nextTick();
+        // step has not changed:
+        expect(wrapper.vm.$refs.manager.currentStep).toBe(0);
+        // value is updated back to what it was
+        expect(wrapper.vm.value).toBe(0);
+      });
+    });
+  });
 });
