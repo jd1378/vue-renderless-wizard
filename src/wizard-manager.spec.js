@@ -169,5 +169,27 @@ describe('wizard-manager', () => {
     });
   });
 
-  describe('props', () => {});
+  describe('props', () => {
+    beforeEach(() => {
+      wrapper = mount(WizardManager, {
+        propsData: {
+          initialData: {
+            a: 'b',
+            c: 'd',
+          },
+        },
+        scopedSlots: {
+          default: renderDefault,
+        },
+      });
+    });
+
+    it('uses `initialData` prop in slot scope', () => {
+      expect(scopeProps).toBeTruthy();
+      expect(scopeProps.data).toStrictEqual({
+        a: 'b',
+        c: 'd',
+      });
+    });
+  });
 });
