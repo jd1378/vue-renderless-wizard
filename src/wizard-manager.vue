@@ -2,7 +2,7 @@
 import { toInteger } from './utils/number';
 import { isFunction } from './utils/inspect';
 import { cloneDeep } from './utils/clone-deep';
-import { notDisabled, disabled } from './utils/filters';
+import { notDisabled } from './utils/filters';
 
 /**
  * Vue Renderless Wizard component (hopefully) helps you manage the steps of your wizard easily.
