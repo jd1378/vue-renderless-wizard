@@ -140,6 +140,7 @@ describe('integration of steps and wizard', () => {
       });
     });
   });
+
   describe('step registeration', () => {
     it('keeps reference of <WizardStep> components inside', () => {
       let wrapper = mount(
@@ -176,6 +177,7 @@ describe('integration of steps and wizard', () => {
       expect(wrapper.vm.$refs.manager.stepsCount).toBe(3);
     });
   });
+
   describe('wizard manager v-model and value prop', () => {
     it('controls `currentStep` index of wizard', async () => {
       const wrapper = mount(
@@ -880,6 +882,7 @@ describe('integration of steps and wizard', () => {
       });
     });
   });
+
   describe('wizard-step events', () => {
     describe('finished', () => {
       it('is emitted when: (next call is successfull)', async () => {
