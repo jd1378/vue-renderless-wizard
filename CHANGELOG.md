@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.8
+
+- fix hasPrev not updating
+  
 ## 1.0.7
 
 - removes unnecessary import
