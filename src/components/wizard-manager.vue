@@ -8,8 +8,7 @@ import type WizardStep from './wizard-step.vue';
 import { ActivateStepEvent } from '../events';
 
 /**
- * Vue Renderless Wizard component (hopefully) helps you manage the steps of your wizard easily.
- * @requires ./wizard-step.vue
+ * Vue Renderless Wizard component helps you manage the steps of your wizard more easily.
  */
 export default {
   provide() {
