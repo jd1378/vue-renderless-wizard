@@ -1,7 +1,7 @@
 <script>
-import { h, Transition, Comment } from 'vue';
+import { h, Transition, Comment, defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
   inject: {
     wizardManager: {
       default: () => ({}),
@@ -145,5 +145,5 @@ export default {
 
     return h(Transition, transition, () => children);
   },
-};
+});
 </script>

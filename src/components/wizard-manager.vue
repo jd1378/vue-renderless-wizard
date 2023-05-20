@@ -3,14 +3,14 @@ import { toInteger } from '../utils/number';
 import { isFunction } from '../utils/inspect';
 import { cloneDeep } from '../utils/clone-deep';
 import { notDisabled } from '../utils/filters';
-import { h, Comment } from 'vue';
+import { h, Comment, defineComponent } from 'vue';
 import type WizardStep from './wizard-step.vue';
 import { ActivateStepEvent } from '../events';
 
 /**
  * Vue Renderless Wizard component helps you manage the steps of your wizard more easily.
  */
-export default {
+export default defineComponent({
   provide() {
     return {
       wizardManager: this,
@@ -329,5 +329,5 @@ export default {
       return h(Comment);
     }
   },
-};
+});
 </script>
