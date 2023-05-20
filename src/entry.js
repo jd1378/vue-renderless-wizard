@@ -1,6 +1,7 @@
 // Import vue component
 import WizardManager from './components/wizard-manager.vue';
 import WizardStep from './components/wizard-step.vue';
+import { ActivateStepEvent } from './events';
 // install function executed by Vue.use()
 const install = function installVueRenderlessWizard(Vue) {
   if (install.installed) return;
@@ -31,8 +32,8 @@ if (GlobalVue) {
 
 // export install function in default export
 // to be able to be registered via Vue.use()
-export default { WizardManager, WizardStep, install };
-export { WizardManager, WizardStep, install };
+export default { WizardManager, WizardStep, install, ActivateStepEvent };
+export { WizardManager, WizardStep, install, ActivateStepEvent };
 
 // It's possible to expose named exports when writing components that can
 // also be used as directives, etc. - eg. import { RollupDemoDirective } from 'rollup-demo';

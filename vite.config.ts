@@ -46,7 +46,7 @@ export default defineConfig({
       output: {
         assetFileNames: (assetInfo) => {
           if (assetInfo.name === 'main.css') return 'vue-renderless-wizard.css';
-          return assetInfo.name;
+          return assetInfo.name as string;
         },
         exports: 'named',
         globals: {
