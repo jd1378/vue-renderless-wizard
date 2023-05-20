@@ -14,7 +14,7 @@ export default defineConfig({
   // site-level options
   title: 'vue-renderless-wizard',
   description: 'a renderless wizard/stepper component for vue',
-  base: '/docs/',
+  base: '/vue-renderless-wizard/',
   themeConfig: {
     sidebar: [
       {  

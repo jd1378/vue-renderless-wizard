@@ -14,7 +14,8 @@
     "prepublishOnly": "npm run build",
     "lint": "eslint --ext \".js,.ts,.vue\" --ignore-path .gitignore .",
     "docs": "concurrently \"vue-docgen --watch\" \"vitepress dev docs\"",
-    "docs:build": "vue-docgen && vitepress build docs"
+    "docs:build": "vue-docgen && vitepress build docs",
+    "docs:preview": "vue-docgen && vitepress preview docs"
   },
   "type": "module",
   "exports": {
