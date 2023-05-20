@@ -21,14 +21,14 @@ defineProps({
 <style>
 .preview-code {
   display: flex;
-  flex-flow: row-reverse wrap;
+  flex-flow: column wrap;
   border-radius: 6px;
   overflow: hidden;
   border: 1px solid #e2e2e2;
 }
 .vp-doc .preview-code .block {
   flex-grow: 1;
-  width: 50%;
+  width: 100%;
   border-radius: 0;
   margin:0;
   min-height: 300px;

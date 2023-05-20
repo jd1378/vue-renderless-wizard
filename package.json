@@ -48,6 +48,7 @@
     "@vue/test-utils": "^2.3.2",
     "concurrently": "^8.0.1",
     "cross-env": "^7.0.3",
+    "es-module-lexer": "^1.2.1",
     "eslint": "^8.40.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",

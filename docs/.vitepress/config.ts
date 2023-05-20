@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress'
 import * as path from "path";
 import { globbySync } from "globby";
 import { fileURLToPath } from 'url';
-import vueLiveMd from './vue-live-md-it.mjs';
+import vueLiveMd from './vue-live-md-it';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
