@@ -11,10 +11,10 @@ const __dirname = path.dirname(__filename);
 const sidebarComponents = globbySync('components/**/*.md', { cwd: path.resolve(__dirname, '../src')})
 
 export default defineConfig({
-  outDir: path.resolve(__dirname, '../../dist'),
   // site-level options
   title: 'vue-renderless-wizard',
   description: 'a renderless wizard/stepper component for vue',
+  base: '/docs/',
   themeConfig: {
     sidebar: [
       {  
