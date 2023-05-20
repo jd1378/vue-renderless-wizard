@@ -1,6 +1,6 @@
 // Import vue component
-import WizardManager from '@/wizard-manager.vue';
-import WizardStep from '@/wizard-step.vue';
+import WizardManager from './components/wizard-manager.vue';
+import WizardStep from './components/wizard-step.vue';
 // install function executed by Vue.use()
 const install = function installVueRenderlessWizard(Vue) {
   if (install.installed) return;

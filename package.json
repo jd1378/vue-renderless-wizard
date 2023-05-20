@@ -1,69 +1,81 @@
 {
   "name": "vue-renderless-wizard",
-  "version": "1.0.8",
+  "version": "2.0.0",
   "description": "a renderless wizard/stepper component for vue",
   "author": "jd1378",
   "scripts": {
-    "serve": "vue-cli-service serve src/serve-dev.js",
-    "build": "cross-env NODE_ENV=production rollup --config build/rollup.config.js",
-    "build:es": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format es",
-    "build:ssr": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format cjs",
-    "build:unpkg": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format iife",
-    "dev": "npm run styleguide",
-    "styleguide": "vue-cli-service styleguidist",
-    "styleguide:build": "vue-cli-service styleguidist:build",
-    "test": "vue-cli-service test:unit",
-    "prepublishOnly": "npm run build"
+    "serve": "vite",
+    "build": "cross-env NODE_ENV=production vue-tsc && vite build",
+    "dev": "npm run serve",
+    "preview": "vite preview --port 4173",
+    "type-check": "vue-tsc --noEmit",
+    "styleguide": "concurrently \"vue-docgen --watch\" \"vitepress dev docs\"",
+    "styleguide:build": "vue-docgen && vitepress build docs",
+    "test": "vitest --dom run",
+    "coverage": "vitest --dom run --coverage",
+    "prepublishOnly": "npm run build",
+    "lint": "eslint --ext \".js,.ts,.vue\" --ignore-path .gitignore ."
   },
-  "main": "dist/vue-renderless-wizard.ssr.js",
-  "module": "dist/vue-renderless-wizard.esm.js",
-  "browser": "dist/vue-renderless-wizard.esm.js",
-  "unpkg": "dist/vue-renderless-wizard.min.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/vue-renderless-wizard.esm.js",
+      "require": "./dist/vue-renderless-wizard.umd.js"
+    },
+    "./cjs": "./dist/vue-renderless-wizard.cjs.js",
+    "./sfc/manager": "./src/components/wizard-manager.vue",
+    "./sfc/step": "./src/components/wizard-step.vue"
+  },
+  "types": "./dist/main.d.ts",
+  "main": "dist/vue-renderless-wizard.umd.js",
+  "module": "dist/vue-renderless-wizard.es.js",
   "files": [
     "dist/*",
     "src/**/*.vue",
-    "!src/serve-dev.*"
+    "src/**/*.js",
+    "!src/serve-dev.*",
+    "!src/**/*.test.js",
+    "!src/**/*.spec.js"
   ],
   "devDependencies": {
-    "@babel/core": "^7.12.10",
-    "@babel/eslint-parser": "^7.12.1",
-    "@babel/plugin-transform-runtime": "^7.12.10",
-    "@babel/preset-env": "^7.12.11",
-    "@babel/runtime-corejs2": "^7.12.5",
-    "@rollup/plugin-alias": "^3.1.1",
-    "@rollup/plugin-babel": "^5.2.2",
-    "@rollup/plugin-commonjs": "^17.0.0",
-    "@rollup/plugin-replace": "^2.3.4",
-    "@types/jest": "^26.0.20",
-    "@vue/babel-helper-vue-jsx-merge-props": "^1.2.1",
-    "@vue/babel-preset-jsx": "^1.2.4",
-    "@vue/cli-plugin-babel": "^4.5.10",
-    "@vue/cli-plugin-unit-jest": "^4.5.10",
-    "@vue/cli-service": "^4.5.10",
-    "@vue/test-utils": "^1.1.2",
-    "babel-jest": "^26.6.3",
+    "@typescript-eslint/eslint-plugin": "^5.59.6",
+    "@typescript-eslint/parser": "^5.59.6",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "@vitejs/plugin-vue-jsx": "^3.0.1",
+    "@vitest/coverage-istanbul": "^0.31.1",
+    "@vue/eslint-config-typescript": "^11.0.3",
+    "@vue/test-utils": "^2.3.2",
+    "concurrently": "^8.0.1",
     "cross-env": "^7.0.3",
-    "eslint": "^7.18.0",
-    "eslint-config-prettier": "^7.2.0",
-    "eslint-loader": "^4.0.2",
-    "eslint-plugin-prettier": "^3.3.1",
-    "eslint-plugin-vue": "^7.5.0",
-    "jest": "^26.6.3",
-    "minimist": "^1.2.0",
-    "prettier": "^2.2.1",
-    "rollup": "^2.37.1",
-    "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-vue": "^6.0.0",
-    "vue": "^2.6.12",
-    "vue-cli-plugin-styleguidist": "~4.34.2",
-    "vue-jest": "^3.0.7",
-    "vue-template-compiler": "^2.6.12"
+    "eslint": "^8.40.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-prettier-vue": "^4.2.0",
+    "eslint-plugin-vue": "^9.13.0",
+    "globby": "^13.1.4",
+    "happy-dom": "^9.18.3",
+    "minimist": "^1.2.8",
+    "prettier": "^2.8.8",
+    "rollup": "^3.22.0",
+    "rollup-plugin-typescript2": "^0.34.1",
+    "tslib": "^2.5.1",
+    "typescript": "^5.0.4",
+    "vite": "^4.3.8",
+    "vite-plugin-dts": "^2.3.0",
+    "vitepress": "^1.0.0-alpha.75",
+    "vitest": "^0.31.1",
+    "vue": "^3.3.4",
+    "vue-component-meta": "^1.6.5",
+    "vue-docgen-cli": "^4.67.0",
+    "vue-eslint-parser": "^9.3.0",
+    "vue-live": "^2.5.3",
+    "vue-tsc": "^1.6.5"
   },
   "peerDependencies": {
-    "vue": "^2.6.10"
+    "vue": ">=3.0.0"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=16"
   },
   "keywords": [
     "vue",
@@ -77,8 +89,5 @@
   "repository": {
     "type": "git",
     "url": "git@github.com:jd1378/vue-renderless-wizard.git"
-  },
-  "dependencies": {
-    "@babel/runtime": "^7.12.5"
   }
 }
