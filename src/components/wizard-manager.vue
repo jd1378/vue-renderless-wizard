@@ -5,7 +5,7 @@ import { cloneDeep } from '../utils/clone-deep';
 import { notDisabled } from '../utils/filters';
 import { h, Comment } from 'vue';
 import type WizardStep from './wizard-step.vue';
-import { ActivateStepEvent } from './events';
+import { ActivateStepEvent } from '../events';
 
 /**
  * Vue Renderless Wizard component (hopefully) helps you manage the steps of your wizard easily.
