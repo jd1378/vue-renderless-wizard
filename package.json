@@ -1,7 +1,7 @@
 {
   "name": "vue-renderless-wizard",
   "version": "2.0.2",
-  "description": "a renderless wizard/stepper component for vue",
+  "description": "a vue 3 renderless wizard/stepper component for vue",
   "author": "jd1378",
   "scripts": {
     "serve": "vite",
