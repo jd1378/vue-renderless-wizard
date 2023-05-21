@@ -40,7 +40,42 @@ export default defineComponent({
       default: () => ({}),
     },
   },
-  emits: ['update:modelValue', 'reset', 'finished', 'activate-step'],
+  emits: {
+    /**
+     * Emitted when a step is shown. Used to update the v-model.
+     * @event update:modelValue
+     * @property {number} stepIndex - Current selected step index (0-based index)
+     */
+    'update:modelValue': function updateModelValue(index: number) {
+      return index >= 0;
+    },
+    /**
+     * Triggered when reset is called and current step is changed to **value** prop successfully. Wizard data is reset to initial data as well.
+     * @event reset
+     * @type {Event}
+     */
+    reset() {
+      return true;
+    },
+    /**
+     * Emitted when **next()** function has been called, there's no next step remaining and validation for current step has passed.
+     * @event finished
+     * @property {object} data - contains the wizard data
+     */
+    finished(data: object) {
+      return typeof data === 'object';
+    },
+    /**
+     * Emitted just before a step is shown/activated. Cancelable
+     * @event activate-step
+     * @property {number} newStepIndex - Step being activated (0-based index)
+     * @property {number} prevStepIndex - Step that is currently active (0-based index). Will be -1 if no current active step
+     * @property {Event} event - Event object. Call event.preventDefault() to cancel
+     */
+    'activate-step': function activateStep(e: ActivateStepEvent) {
+      return e instanceof ActivateStepEvent;
+    },
+  },
   data() {
     return {
       currentStep: this.modelValue,
@@ -216,11 +251,6 @@ export default defineComponent({
             });
           } else {
             step.$emit('finished', this.wizardData);
-            /**
-             * Emitted when **next()** function has been called, there's no next step remaining and validation for current step has passed.
-             * @event finished
-             * @property {object} data - contains the wizard data
-             */
             this.$emit('finished', this.wizardData);
           }
         }
@@ -246,13 +276,6 @@ export default defineComponent({
         if (index !== this.currentStep && !step.disabled) {
           const stepEvent = new ActivateStepEvent(index, this.currentStep);
 
-          /**
-           * Emitted just before a step is shown/activated. Cancelable
-           * @event activate-step
-           * @property {number} newStepIndex - Step being activated (0-based index)
-           * @property {number} prevStepIndex - Step that is currently active (0-based index). Will be -1 if no current active step
-           * @property {Event} event - Event object. Call event.preventDefault() to cancel
-           */
           this.$emit('activate-step', stepEvent);
 
           if (!stepEvent.defaultPrevented) {
@@ -264,11 +287,6 @@ export default defineComponent({
 
       // Couldn't set step, so ensure v-model is up to date
       if (!result && this.modelValue !== this.currentStep) {
-        /**
-         * Emitted when a step is shown. Used to update the v-model.
-         * @event update:modelValue
-         * @property {number} stepIndex - Current selected step index (0-based index)
-         */
         this.$emit('update:modelValue', this.currentStep);
       }
 
@@ -278,11 +296,6 @@ export default defineComponent({
       this.setStep(this.modelValue);
       if (this.currentStep === this.modelValue) {
         this.wizardData = cloneDeep(this.initialData, {});
-        /**
-         * Triggered when reset is called and current step is changed to **value** prop successfully. Wizard data is reset to initial data as well.
-         * @event reset
-         * @type {Event}
-         */
         this.$emit('reset');
       }
     },
