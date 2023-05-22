@@ -1,8 +1,7 @@
 import { mount } from '@vue/test-utils';
-import { h, nextTick } from 'vue';
+import { h, nextTick, ref } from 'vue';
 import WizardStep from '@/components/wizard-step.vue';
 import { vi, describe, beforeEach, it, expect } from 'vitest';
-import { setExposedValue } from './test-util';
 
 describe('wizard-step', () => {
   describe('wizard manager registeration', () => {
@@ -193,11 +192,11 @@ describe('wizard-step', () => {
     describe('transition', () => {
       it("will be called with 'backwarding' and 'localActive' if it's a function", async () => {
         const getTransition = vi.fn();
-        const wrapper = mount(WizardStep, {
+        mount(WizardStep, {
           global: {
             provide: {
               wizardManager: {
-                backwarding: true,
+                backwarding: ref(true),
               },
             },
           },
