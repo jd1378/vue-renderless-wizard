@@ -1,6 +1,6 @@
 {
   "name": "vue-renderless-wizard",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "a vue 3 renderless wizard/stepper component for vue",
   "author": "jd1378",
   "scripts": {
@@ -20,20 +20,21 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/vue-renderless-wizard.esm.js",
-      "require": "./dist/vue-renderless-wizard.umd.js"
+      "import": "./dist/VueRenderlessWizard.esm.js",
+      "require": "./dist/VueRenderlessWizard.umd.js"
     },
-    "./cjs": "./dist/vue-renderless-wizard.cjs.js",
+    "./cjs": "./dist/VueRenderlessWizard.cjs.js",
     "./sfc/manager": "./src/components/wizard-manager.vue",
     "./sfc/step": "./src/components/wizard-step.vue"
   },
   "types": "./dist/main.d.ts",
-  "main": "dist/vue-renderless-wizard.umd.js",
-  "module": "dist/vue-renderless-wizard.es.js",
+  "main": "dist/VueRenderlessWizard.umd.js",
+  "module": "dist/VueRenderlessWizard.es.js",
   "files": [
     "dist/*",
     "src/**/*.vue",
     "src/**/*.js",
+    "src/**/*.ts",
     "!src/serve-dev.*",
     "!src/**/*.test.js",
     "!src/**/*.spec.js"

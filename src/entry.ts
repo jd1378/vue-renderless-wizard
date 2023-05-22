@@ -3,9 +3,9 @@ import WizardManager from './components/wizard-manager.vue';
 import WizardStep from './components/wizard-step.vue';
 import { ActivateStepEvent } from './events';
 // install function executed by Vue.use()
-const install = function installVueRenderlessWizard(Vue) {
-  if (install.installed) return;
-  install.installed = true;
+const install = function installVueRenderlessWizard(Vue: any) {
+  if ((install as any).installed) return;
+  (install as any).installed = true;
   Vue.component('WizardManager', WizardManager);
   Vue.component('WizardStep', WizardStep);
 };
@@ -21,9 +21,9 @@ const plugin = {
 let GlobalVue = null;
 /* istanbul ignore next */
 if (typeof window !== 'undefined') {
-  GlobalVue = window.Vue;
+  GlobalVue = (window as any).Vue;
 } else if (typeof global !== 'undefined') {
-  GlobalVue = global.Vue;
+  GlobalVue = (global as any).Vue;
 }
 /* istanbul ignore next */
 if (GlobalVue) {
