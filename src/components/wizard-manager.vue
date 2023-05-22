@@ -1,340 +1,389 @@
-<script lang="ts">
+<script lang="ts" setup>
 import { toInteger } from '../utils/number';
 import { isFunction } from '../utils/inspect';
 import { cloneDeep } from '../utils/clone-deep';
 import { notDisabled } from '../utils/filters';
-import { h, Comment, defineComponent } from 'vue';
+import {
+  h,
+  Comment,
+  provide,
+  defineSlots,
+  withDefaults,
+  ref,
+  shallowRef,
+  computed,
+  onMounted,
+  onBeforeUnmount,
+  watch,
+  nextTick,
+} from 'vue';
 import type WizardStep from './wizard-step.vue';
 import { ActivateStepEvent } from '../events';
 
-/**
- * Vue Renderless Wizard component helps you manage the steps of your wizard more easily.
- */
-export default defineComponent({
-  provide() {
-    return {
-      wizardManager: this,
-    };
-  },
-  props: {
+const props = withDefaults(
+  defineProps<{
     /**
-     * Starting step index (zero-based). is 0 by default
+     * Starting step index (zero-based). is `0` by default. be careful to not set this below `0`;
      */
-    modelValue: {
-      type: Number,
-      default: 0,
-      validator: (value) => typeof value === 'number' && value >= 0,
-    },
+    modelValue?: number;
     /**
      * Accessed by `<wizard-step>` component. If set, all the steps are rendered lazily. You want to set this to `true` almost always.
      * Without this, All of the steps will be visible at once.
+     *
+     * Default: `true`
      */
-    lazy: {
-      type: Boolean,
-      default: false,
-    },
+    lazy?: boolean;
     /**
      * The data that is used as initial data *and* **reset**
      */
-    initialData: {
-      type: Object,
-      default: () => ({}),
-    },
-  },
-  emits: {
-    /**
-     * Emitted when a step is shown. Used to update the v-model.
-     * @event update:modelValue
-     * @property {number} stepIndex - Current selected step index (0-based index)
-     */
-    'update:modelValue': function updateModelValue(index: number) {
-      return index >= 0;
-    },
-    /**
-     * Triggered when reset is called and current step is changed to **value** prop successfully. Wizard data is reset to initial data as well.
-     * @event reset
-     * @type {Event}
-     */
-    reset() {
-      return true;
-    },
-    /**
-     * Emitted when **next()** function has been called, there's no next step remaining and validation for current step has passed.
-     * @event finished
-     * @property {object} data - contains the wizard data
-     */
-    finished(data: object) {
-      return typeof data === 'object';
-    },
-    /**
-     * Emitted just before a step is shown/activated. Cancelable
-     * @event activate-step
-     * @property {number} newStepIndex - Step being activated (0-based index)
-     * @property {number} prevStepIndex - Step that is currently active (0-based index). Will be -1 if no current active step
-     * @property {Event} event - Event object. Call event.preventDefault() to cancel
-     */
-    'activate-step': function activateStep(e: ActivateStepEvent) {
-      return e instanceof ActivateStepEvent;
-    },
-  },
-  data() {
-    return {
-      currentStep: this.modelValue,
-      // Array of `<wizard-step>` instances, in DOM order
-      steps: [] as (typeof WizardStep)[],
-      // Array of child instances registered (for triggering reactive updates)
-      registeredSteps: [],
-      wizardData: cloneDeep(this.initialData, {}),
-      validating: false,
-      backwarding: false,
-    };
-  },
-  computed: {
-    /**
-     * Count of detected steps
-     */
-    stepsCount() {
-      return this.steps.length;
-    },
-    /**
-     * Count of available steps
-     */
-    availableSteps() {
-      return this.steps.filter(notDisabled).length;
-    },
-    /**
-     * Current step relative to available steps
-     */
-    availableStepProgress() {
-      return (
-        this.steps.slice(0, this.currentStep).reverse().filter(notDisabled)
-          .length + 1
-      );
-    },
-    nextStep() {
-      return this.steps.slice(this.currentStep + 1).find(notDisabled);
-    },
-    prevStep() {
-      return this.steps.slice(0, this.currentStep).reverse().find(notDisabled);
-    },
-    hasNext() {
-      return !!this.nextStep;
-    },
-    hasPrev() {
-      return !!this.prevStep;
-    },
-  },
-  watch: {
-    // for v-model
-    modelValue(newValue, oldValue) {
-      if (newValue !== oldValue) {
-        newValue = toInteger(newValue, 0);
-        oldValue = toInteger(oldValue, 0);
+    initialData?: object;
+  }>(),
+  {
+    modelValue: 0,
+    lazy: false,
+    initialData: () => ({}),
+  }
+);
 
-        const $step = this.steps[newValue];
-        if ($step && !$step.disabled) {
-          this.activateStep($step);
+const emit = defineEmits<{
+  /**
+   * Emitted when a step is shown. Used to update the v-model.
+   * @event update:modelValue
+   * @property {number} stepIndex - Current selected step index (0-based index)
+   */
+  (event: 'update:modelValue', index: number): void;
+  /**
+   * Triggered when reset is called and current step is changed to **value** prop successfully. Wizard data is reset to initial data as well.
+   * @event reset
+   * @type {Event}
+   */
+  (event: 'reset'): void;
+  /**
+   * Emitted when **next()** function has been called, there's no next step remaining and validation for current step has passed.
+   * @event finished
+   * @property {object} data - contains the wizard data
+   */
+  (event: 'finished', data: object): void;
+  /**
+   * Emitted just before a step is shown/activated. Cancelable
+   * @event activate-step
+   * @property {number} newStepIndex - Step being activated (0-based index)
+   * @property {number} prevStepIndex - Step that is currently active (0-based index). Will be -1 if no current active step
+   * @property {Event} event - Event object. Call event.preventDefault() to cancel
+   */
+  (event: 'activate-step', e: ActivateStepEvent): void;
+}>();
+
+// data
+const currentStep = ref(props.modelValue);
+/** Array of `<wizard-step>` instances, in DOM order */
+const steps = shallowRef([] as (typeof WizardStep)[]);
+const wizardData = ref(cloneDeep(props.initialData, {}));
+const validating = ref(false);
+const backwarding = ref(false);
+
+//computed
+/**
+ * Count of detected steps
+ */
+const stepsCount = computed(() => {
+  return steps.value.length;
+});
+/**
+ * Count of available steps
+ */
+const availableSteps = computed(() => {
+  return steps.value.filter(notDisabled).length;
+});
+/**
+ * Current step relative to available steps
+ */
+const availableStepProgress = computed(() => {
+  return (
+    steps.value.slice(0, currentStep.value).reverse().filter(notDisabled)
+      .length + 1
+  );
+});
+const nextStep = computed(() => {
+  return steps.value.slice(currentStep.value + 1).find(notDisabled);
+});
+const prevStep = computed(() => {
+  return steps.value.slice(0, currentStep.value).reverse().find(notDisabled);
+});
+const hasNext = computed(() => {
+  return !!nextStep.value;
+});
+const hasPrev = computed(() => {
+  return !!prevStep.value;
+});
+
+// methods
+
+function updateSteps() {
+  // Find last active non-disabled step in current steps
+  // We trust step state over `currentStep`, in case steps were added/removed/re-ordered
+  let stepIndex = steps.value.indexOf(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    steps.value
+      .slice()
+      .reverse()
+      .find(($step) => $step.localActive.value && !$step.disabled)
+  );
+
+  // Else try setting to `currentStep`
+  if (stepIndex < 0) {
+    if (
+      steps.value[currentStep.value] &&
+      !steps.value[currentStep.value].disabled
+    ) {
+      // Current step is not disabled
+      stepIndex = currentStep.value;
+    }
+  }
+
+  if (stepIndex < 0) {
+    stepIndex = steps.value.indexOf(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      steps.value.find(notDisabled)
+    );
+  }
+
+  // Ensure only one step is active at a time
+  steps.value.forEach((step, index) => {
+    step.localActive.value = index === stepIndex;
+  });
+
+  if (stepIndex !== -1) {
+    currentStep.value = stepIndex;
+  }
+}
+function registerStep(step: typeof WizardStep) {
+  if (!steps.value.includes(step)) {
+    const edited = steps.value.slice();
+    edited.push(step);
+    steps.value = edited;
+  }
+}
+function unregisterStep(step: typeof WizardStep) {
+  steps.value = steps.value.slice().filter((s) => s !== step);
+}
+async function next(bypassValidation = false) {
+  if (validating.value) return;
+  const step = steps.value[currentStep.value];
+  if (step) {
+    validating.value = true;
+    let canContinue = true;
+    if (!bypassValidation && isFunction(step.validate)) {
+      canContinue = await step.validate(wizardData.value);
+    }
+
+    if (canContinue) {
+      backwarding.value = false;
+      if (nextStep.value) {
+        nextTick(() => {
+          const result = activateStep(nextStep.value);
+          if (result) {
+            step.emit('finished', wizardData.value);
+          }
+        });
+      } else {
+        step.emit('finished', wizardData.value);
+        emit('finished', wizardData.value);
+      }
+    }
+    validating.value = false;
+  }
+}
+function prev() {
+  if (validating.value) return;
+  backwarding.value = true;
+  nextTick(() => {
+    activateStep(prevStep.value);
+  });
+}
+function setStep(index: number) {
+  return activateStep(steps.value[index]);
+}
+function activateStep(step?: typeof WizardStep) {
+  let result = false;
+
+  if (step) {
+    const index = steps.value.indexOf(step);
+
+    if (index !== currentStep.value && !step.disabled) {
+      const stepEvent = new ActivateStepEvent(index, currentStep.value);
+
+      emit('activate-step', stepEvent);
+
+      if (!stepEvent.defaultPrevented) {
+        currentStep.value = index;
+        result = true;
+      }
+    }
+  }
+
+  // Couldn't set step, so ensure v-model is up to date
+  if (!result && props.modelValue !== currentStep.value) {
+    emit('update:modelValue', currentStep.value);
+  }
+
+  return result;
+}
+function reset() {
+  setStep(props.modelValue);
+  if (currentStep.value === props.modelValue) {
+    wizardData.value = cloneDeep(props.initialData, {});
+    emit('reset');
+  }
+}
+
+// other
+watch(
+  () => props.modelValue,
+  (newValue, oldValue) => {
+    if (newValue !== oldValue) {
+      newValue = toInteger(newValue, 0);
+      oldValue = toInteger(oldValue, 0);
+
+      const $step = steps.value[newValue];
+      if ($step && !$step.disabled) {
+        activateStep($step);
+      } else {
+        // Try next or prev steps
+        if (newValue < oldValue) {
+          activateStep(prevStep.value);
         } else {
-          // Try next or prev steps
-          if (newValue < oldValue) {
-            this.activateStep(this.prevStep);
-          } else {
-            this.activateStep(this.nextStep);
-          }
+          activateStep(nextStep.value);
         }
       }
-    },
-    currentStep(newValue) {
-      let index = 0;
+    }
+  }
+);
 
-      // Ensure only one step is active at most
-      this.steps.forEach(($step, i) => {
-        if (i === newValue && !$step.disabled) {
-          $step.localActive = true;
-          index = i;
-        } else {
-          $step.localActive = false;
-        }
-      });
+watch(currentStep, (newValue) => {
+  let index = 0;
 
-      // Update the v-model
-      this.$emit('update:modelValue', index);
-    },
-    steps() {
-      this.updateSteps();
-    },
-  },
-  mounted() {
-    this.updateSteps();
-  },
-  beforeDestroy() {
-    // Ensure no references to child instances exist
-    this.steps = [];
-  },
-  methods: {
-    updateSteps() {
-      // Find last active non-disabled step in current steps
-      // We trust step state over `currentStep`, in case steps were added/removed/re-ordered
-      let stepIndex = this.steps.indexOf(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        this.steps
-          .slice()
-          .reverse()
-          .find(($step) => $step.localActive && !$step.disabled)
-      );
+  // Ensure only one step is active at most
+  steps.value.forEach(($step, i) => {
+    if (i === newValue && !$step.disabled) {
+      $step.localActive.value = true;
+      index = i;
+    } else {
+      $step.localActive.value = false;
+    }
+  });
 
-      // Else try setting to `currentStep`
-      if (stepIndex < 0) {
-        if (
-          this.steps[this.currentStep] &&
-          !this.steps[this.currentStep].disabled
-        ) {
-          // Current step is not disabled
-          stepIndex = this.currentStep;
-        }
-      }
+  // Update the v-model
+  emit('update:modelValue', index);
+});
 
-      if (stepIndex < 0) {
-        stepIndex = this.steps.indexOf(
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          this.steps.find(notDisabled)
-        );
-      }
+watch(steps, updateSteps);
 
-      // Ensure only one step is active at a time
-      this.steps.forEach((step, index) => {
-        step.localActive = index === stepIndex;
-      });
+onMounted(() => {
+  updateSteps();
+});
 
-      if (stepIndex !== -1) {
-        this.currentStep = stepIndex;
-      }
-    },
-    registerStep(step: typeof WizardStep) {
-      if (!this.steps.includes(step)) {
-        this.steps.push(step);
-      }
-    },
-    unregisterStep(step: typeof WizardStep) {
-      this.steps = this.steps.slice().filter((s) => s !== step);
-    },
-    async next(bypassValidation = false) {
-      if (this.validating) return;
-      const step = this.steps[this.currentStep];
-      if (step) {
-        this.validating = true;
-        let canContinue = false;
-        if (bypassValidation === true) {
-          canContinue = true;
-        } else if (isFunction(step.validate)) {
-          canContinue = await step.validate(this.wizardData);
-        } else if (step.validate === false) {
-          canContinue = true;
-        }
+onBeforeUnmount(() => {
+  // Ensure no references to child instances exist
+  steps.value = [];
+});
 
-        if (canContinue) {
-          this.backwarding = false;
-          if (this.nextStep) {
-            this.$nextTick(() => {
-              const result = this.activateStep(this.nextStep);
-              if (result) {
-                step.$emit('finished', this.wizardData);
-              }
-            });
-          } else {
-            step.$emit('finished', this.wizardData);
-            this.$emit('finished', this.wizardData);
-          }
-        }
-        this.validating = false;
-      }
-    },
-    prev() {
-      if (this.validating) return;
-      this.backwarding = true;
-      this.$nextTick(() => {
-        this.activateStep(this.prevStep);
-      });
-    },
-    setStep(index: number) {
-      return this.activateStep(this.steps[index]);
-    },
-    activateStep(step?: typeof WizardStep) {
-      let result = false;
-
-      if (step) {
-        const index = this.steps.indexOf(step);
-
-        if (index !== this.currentStep && !step.disabled) {
-          const stepEvent = new ActivateStepEvent(index, this.currentStep);
-
-          this.$emit('activate-step', stepEvent);
-
-          if (!stepEvent.defaultPrevented) {
-            this.currentStep = index;
-            result = true;
-          }
-        }
-      }
-
-      // Couldn't set step, so ensure v-model is up to date
-      if (!result && this.modelValue !== this.currentStep) {
-        this.$emit('update:modelValue', this.currentStep);
-      }
-
-      return result;
-    },
-    reset() {
-      this.setStep(this.modelValue);
-      if (this.currentStep === this.modelValue) {
-        this.wizardData = cloneDeep(this.initialData, {});
-        this.$emit('reset');
-      }
-    },
-  },
+const slots = defineSlots<{
   /**
    * The default slot of wizard. You can structure your overall wizard look in here and put where the steps should be rendered.
    * There **Must** be `<wizard-step>` components inside.
    * @slot default
-   * @binding {number} currentStep - Current step number. Starts from 1 and Excludes disabled steps count so you can use it as is in UI (numbers don't jump).
-   * @binding {number} currentStepIndex - Current step index. starts from zero.
-   * @binding {number} stepsCount - Total steps count. Excludes disabled steps count so you can use it as is in UI.
-   * @binding {number} realStepsCount - Total steps count. Including disabled steps.
-   * @binding {function(boolean: bypassValidation)} next - Proceed to next step
-   * @binding {function} prev - Proceed to previous step
-   * @binding {function(index: number)} setStep - Directly go to a step by index.
-   * @binding {function} reset - Emits a `reset` event, restores `initial-data` prop and goes to first step
-   * @binding {boolean} hasNext
-   * @binding {boolean} hasPrev
-   * @binding {boolean} validating - if a validation check is in progress
-   * @binding {object} data - the wizard data that you can use as your data.
-   * @binding {boolean} backwarding - you can think of it as which direction the wizard is moving.
-   *  If true, It's a previous step,
-   *  If false, It's a next step.
-   *  You have to note though that it can be neither forwarding or backwarding (at the time of accessing this), but for simplicity it's one boolean.
    */
-  render() {
-    if (this.$slots.default) {
-      return this.$slots.default({
-        currentStep: this.availableStepProgress,
-        currentStepIndex: this.currentStep,
-        stepsCount: this.availableSteps,
-        realStepsCount: this.stepsCount,
-        next: this.next,
-        prev: this.prev,
-        setStep: this.setStep,
-        reset: this.reset,
-        hasNext: this.hasNext,
-        hasPrev: this.hasPrev,
-        data: this.wizardData,
-        validating: this.validating,
-        backwarding: this.backwarding,
-      });
-    } else {
-      return h(Comment);
-    }
-  },
+  default(props: {
+    /** Current step number. Starts from 1 and Excludes disabled steps count so you can use it as is in UI (numbers don't jump). */
+    currentStep: number;
+    /** Current step index. starts from zero. */
+    currentStepIndex: number;
+    /** Total steps count. Excludes disabled steps count so you can use it as is in UI. */
+    stepsCount: number;
+    /** Total steps count. Including disabled steps. */
+    realStepsCount: number;
+    /** Proceed to next step */
+    next(bypassValidation: boolean): Promise<void>;
+    /** Proceed to previous step */
+    prev(): void;
+    /** Directly go to a step by index. */
+    setStep(index: number): void;
+    /** Emits a `reset` event, restores `initial-data` prop and goes to first step */
+    reset(): void;
+    hasNext: boolean;
+    hasPrev: boolean;
+    /** if a validation check is in progress */
+    validating: boolean;
+    /** the wizard data that you can use as your data. */
+    data: object;
+    /**
+     * you can think of it as which direction the wizard is moving.
+     *
+     *  If true, It's a previous step,
+     *
+     *  If false, It's a next step.
+     *
+     *  You have to note though that it can be neither forwarding or backwarding (at the time of accessing this), but for simplicity it's one boolean.
+     */
+    backwarding: boolean;
+  }): any;
+}>();
+
+defineRender(() => {
+  if (slots.default) {
+    return slots.default({
+      currentStep: availableStepProgress.value,
+      currentStepIndex: currentStep.value,
+      stepsCount: availableSteps.value,
+      realStepsCount: stepsCount.value,
+      next: next,
+      prev: prev,
+      setStep: setStep,
+      reset: reset,
+      hasNext: hasNext.value,
+      hasPrev: hasPrev.value,
+      data: wizardData.value,
+      validating: validating.value,
+      backwarding: backwarding.value,
+    });
+  } else {
+    return h(Comment);
+  }
 });
+
+// for access inside steps and on refs
+const expose = {
+  // props
+  lazy: props.lazy,
+  initialData: props.initialData,
+  modelValue: props.modelValue,
+  // data
+  currentStep,
+  steps,
+  wizardData,
+  validating,
+  backwarding,
+  // computed
+  stepsCount,
+  availableSteps,
+  availableStepProgress,
+  nextStep,
+  prevStep,
+  hasNext,
+  hasPrev,
+  // methods:
+  updateSteps,
+  registerStep,
+  unregisterStep,
+  next,
+  prev,
+  setStep,
+  activateStep,
+  reset,
+};
+provide('wizardManager', expose);
+defineExpose(expose);
 </script>

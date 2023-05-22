@@ -1,7 +1,8 @@
 import { mount } from '@vue/test-utils';
-import { h } from 'vue';
+import { h, nextTick } from 'vue';
 import WizardStep from '@/components/wizard-step.vue';
 import { vi, describe, beforeEach, it, expect } from 'vitest';
+import { setExposedValue } from './test-util';
 
 describe('wizard-step', () => {
   describe('wizard manager registeration', () => {
@@ -182,7 +183,7 @@ describe('wizard-step', () => {
 
     it('emits "active" when activated', async () => {
       wrapper.vm.localActive = true;
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.emitted().active).toBeTruthy();
       expect(wrapper.emitted().active.length).toBe(1);
     });
@@ -190,9 +191,9 @@ describe('wizard-step', () => {
 
   describe('props', () => {
     describe('transition', () => {
-      it("will be called with 'backwarding' and 'localActive' if it's a function", () => {
+      it("will be called with 'backwarding' and 'localActive' if it's a function", async () => {
         const getTransition = vi.fn();
-        mount(WizardStep, {
+        const wrapper = mount(WizardStep, {
           global: {
             provide: {
               wizardManager: {
@@ -200,13 +201,9 @@ describe('wizard-step', () => {
               },
             },
           },
-          propsData: {
+          props: {
             transition: getTransition,
-          },
-          data() {
-            return {
-              localActive: true,
-            };
+            active: true, // it sets localActive to true for first time
           },
           slots: {
             default: '<div>step 0</div>',

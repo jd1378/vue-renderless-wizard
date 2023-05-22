@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import WizardManager from '../src/components/wizard-manager.vue';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { h } from 'vue';
+import { h, nextTick } from 'vue';
 
 function renderEmpty() {
   return h();
@@ -116,7 +116,7 @@ describe('wizard-manager', () => {
       it('emits reset event when successful', async () => {
         expect(wrapper.emitted().reset).toBeFalsy();
         scopeProps.reset();
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.emitted().reset).toBeTruthy();
         expect(wrapper.emitted().reset.length).toBe(1);
       });
@@ -124,7 +124,7 @@ describe('wizard-manager', () => {
       it('resets to initial data when successful', async () => {
         scopeProps.data.foo = 'rab'; // change data throup scope props
         scopeProps.reset();
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(scopeProps.data).toStrictEqual({
           foo: 'bar',
         });
@@ -152,11 +152,11 @@ describe('wizard-manager', () => {
 
         wrapper.vm.currentStep = 10;
         scopeProps.data.foo = 'rab';
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.vm.currentStep).toBe(10);
         expect(wrapper.emitted().reset).toBeFalsy();
         scopeProps.reset(); // tries to set currentStep to 'value' prop but since the step doesn't exist, it fails.
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.emitted().reset).toBeFalsy();
         // it has failed to reset
         expect(scopeProps.data).toStrictEqual({
@@ -179,7 +179,7 @@ describe('wizard-manager', () => {
 
     it('emits "reset" when reset is called', async () => {
       wrapper.vm.reset();
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.emitted().reset).toBeTruthy();
       expect(wrapper.emitted().reset.length).toBe(1);
     });
@@ -187,13 +187,6 @@ describe('wizard-manager', () => {
 
   describe('props', () => {
     describe('value', () => {
-      it('only accepts number values over 0', () => {
-        const validator = WizardManager.props.modelValue.validator;
-        expect(validator(-1)).toBe(false);
-        expect(validator(0)).toBe(true);
-        expect(validator('str')).toBe(false);
-      });
-
       it('is the default `currentStep` index of wizard', () => {
         const wrapper = mount(WizardManager, {
           propsData: {

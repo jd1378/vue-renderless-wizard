@@ -300,7 +300,7 @@ describe('integration of steps and wizard', () => {
     });
   });
 
-  describe('<wizard-step> beforeDestory', () => {
+  describe('<wizard-step> beforeUnmount', () => {
     it('calls unregisterStep of <wizard-manager>', async () => {
       let wrapper;
       let shouldRemove = false;
@@ -356,19 +356,14 @@ describe('integration of steps and wizard', () => {
 
       let stepsDataInDestroy = undefined;
 
-      wrapper = mount(
-        {
-          ...WizardManager,
-          unmounted: function () {
-            stepsDataInDestroy = this.steps;
-          },
+      wrapper = mount(WizardManager, {
+        slots: {
+          default: renderDefault,
         },
-        {
-          slots: {
-            default: renderDefault,
-          },
-        }
-      );
+        unmounted: function () {
+          stepsDataInDestroy = this.$.exposed.steps.value;
+        },
+      });
 
       expect(wrapper.vm.steps).toBeTruthy();
       expect(wrapper.vm.steps.length).toBe(3);
@@ -743,7 +738,7 @@ describe('integration of steps and wizard', () => {
 
       expect(wrapper.vm.stepsCount).toBe(3);
       expect(wrapper.vm.currentStep).toBe(0);
-      scopeProps.next();
+      await scopeProps.next();
       await nextTick();
       expect(wrapper.vm.currentStep).toBe(2);
     });
