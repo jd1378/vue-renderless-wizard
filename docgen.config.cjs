@@ -20,7 +20,11 @@ module.exports = defineConfig({
   outDir: './docs/',
   getDestFile: (componentPath, { outDir }) => {
     const name = componentPath.split('/').pop() || 'unknown';
-    return path.join(outDir, 'components', name.replace(/\.(vue|ts)$/, '.md'));
+    return path.join(
+      outDir,
+      'src/components',
+      name.replace(/\.(vue|ts)$/, '.md')
+    );
   },
   defaultExamples: false,
   async propsParser(componentPath, _, event) {

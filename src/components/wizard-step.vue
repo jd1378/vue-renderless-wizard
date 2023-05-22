@@ -10,8 +10,6 @@ import {
   watch,
   onBeforeUnmount,
   withDefaults,
-  defineProps,
-  defineExpose,
 } from 'vue';
 import type { TransitionProps } from 'vue';
 
