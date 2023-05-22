@@ -240,13 +240,6 @@ export default defineComponent({
             this.$nextTick(() => {
               const result = this.activateStep(this.nextStep);
               if (result) {
-                /**
-                 * Emitted when the current step has finished (on calling next).
-                 * Emits after activate-step if it was not cancelled.
-                 * Eemits before the <wizard-manager> `finished` event on the last step (there's no `activate-step` when on last step, because there's no next step).
-                 * @event finished
-                 * @property {object} data - contains the wizard data
-                 */
                 step.$emit('finished', this.wizardData);
               }
             });

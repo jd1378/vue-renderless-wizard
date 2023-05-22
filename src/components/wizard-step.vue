@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import { h, Transition, Comment, defineComponent } from 'vue';
 
 export default defineComponent({
@@ -49,6 +49,26 @@ export default defineComponent({
       default: () => ({}),
     },
   },
+  emits: {
+    /**
+     * Emitted when the current step has finished (on calling next).
+     * Emits after activate-step if it was not cancelled.
+     * Eemits before the <wizard-manager> `finished` event on the last step (there's no `activate-step` when on last step, because there's no next step).
+     * @event finished
+     * @property {object} data - contains the wizard data
+     */
+    finished(data: object) {
+      return typeof data === 'object';
+    },
+    /**
+     * Emitted when the step is activated or deactivated. active means it's the current step.
+     * @event active
+     * @property {boolean} newValue
+     */
+    active(newValue: boolean) {
+      return typeof newValue === 'boolean';
+    },
+  },
   data() {
     return {
       localActive: this.active,
@@ -56,7 +76,7 @@ export default defineComponent({
   },
   computed: {
     computedLazy() {
-      return this.wizardManager.lazy || this.lazy;
+      return (this.wizardManager as any).lazy || this.lazy;
     },
   },
   watch: {
@@ -77,14 +97,14 @@ export default defineComponent({
     // Private methods
     registerStep() {
       // Inform `<wizard-manager>` of our presence
-      const { registerStep } = this.wizardManager;
+      const { registerStep } = this.wizardManager as any;
       if (registerStep) {
         registerStep(this);
       }
     },
     unregisterStep() {
       // Inform `<wizard-manager>` of our departure
-      const { unregisterStep } = this.wizardManager;
+      const { unregisterStep } = this.wizardManager as any;
       if (unregisterStep) {
         unregisterStep(this);
       }
@@ -117,33 +137,33 @@ export default defineComponent({
       (this.localActive || !this.computedLazy) && this.$slots.default
         ? this.$slots.default({
             active: this.localActive,
-            currentStep: this.wizardManager.availableStepProgress,
-            currentStepIndex: this.wizardManager.currentStep,
-            stepsCount: this.wizardManager.availableSteps,
-            realStepsCount: this.wizardManager.stepsCount,
-            next: this.wizardManager.next,
-            prev: this.wizardManager.prev,
-            setStep: this.wizardManager.setStep,
-            reset: this.wizardManager.reset,
-            hasNext: this.wizardManager.hasNext,
-            hasPrev: this.wizardManager.hasPrev,
-            data: this.wizardManager.wizardData,
-            validating: this.wizardManager.validating,
-            backwarding: this.wizardManager.backwarding,
+            currentStep: (this.wizardManager as any).availableStepProgress,
+            currentStepIndex: (this.wizardManager as any).currentStep,
+            stepsCount: (this.wizardManager as any).availableSteps,
+            realStepsCount: (this.wizardManager as any).stepsCount,
+            next: (this.wizardManager as any).next,
+            prev: (this.wizardManager as any).prev,
+            setStep: (this.wizardManager as any).setStep,
+            reset: (this.wizardManager as any).reset,
+            hasNext: (this.wizardManager as any).hasNext,
+            hasPrev: (this.wizardManager as any).hasPrev,
+            data: (this.wizardManager as any).wizardData,
+            validating: (this.wizardManager as any).validating,
+            backwarding: (this.wizardManager as any).backwarding,
           })
         : h(Comment);
 
     let transition;
     if (typeof this.transition === 'function') {
       transition = this.transition(
-        this.wizardManager.backwarding,
+        (this.wizardManager as any).backwarding,
         this.localActive
       );
     } else {
       transition = this.transition;
     }
 
-    return h(Transition, transition, () => children);
+    return h(Transition, transition, children);
   },
 });
 </script>
