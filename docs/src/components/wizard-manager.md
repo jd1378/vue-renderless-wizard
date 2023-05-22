@@ -4,11 +4,11 @@
 
 ## Props
 
-| Prop name   | Description                                                                             | Type    | Values | Default |
-| ----------- | --------------------------------------------------------------------------------------- | ------- | ------ | ------- |
-| modelValue  | Starting step index (zero-based). is 0 by default                                       | number  | -      | 0       |
-| lazy        | Accessed by `&lt;wizard-step&gt;` component. If set, all the steps are rendered lazily. | boolean | -      | false   |
-| initialData | The data that is used as initial data _and_ **reset**                                   | object  | -      | {}      |
+| Prop name   | Description                                                                                                                                                                                       | Type    | Values | Default |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ------ | ------- |
+| modelValue  | Starting step index (zero-based). is 0 by default                                                                                                                                                 | number  | -      | 0       |
+| lazy        | Accessed by `&lt;wizard-step&gt;` component. If set, all the steps are rendered lazily. You want to set this to `true` almost always.<br/>Without this, All of the steps will be visible at once. | boolean | -      | false   |
+| initialData | The data that is used as initial data _and_ **reset**                                                                                                                                             | object  | -      | {}      |
 
 ## Events
 

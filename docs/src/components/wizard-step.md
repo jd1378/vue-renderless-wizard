@@ -12,9 +12,10 @@
 
 ## Events
 
-| Event name | Properties | Description |
-| ---------- | ---------- | ----------- |
-| active     |            |
+| Event name | Properties                                   | Description                                                                                                                                                                                                                                                                       |
+| ---------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| finished   | **data** `object` - contains the wizard data | Emitted when the current step has finished (on calling next).<br/>Emits after activate-step if it was not cancelled.<br/>Eemits before the &lt;wizard-manager&gt; `finished` event on the last step (there's no `activate-step` when on last step, because there's no next step). |
+| active     | **newValue** `boolean` - undefined           | Emitted when the step is activated or deactivated. active means it's the current step.                                                                                                                                                                                            |
 
 ## Slots
 
