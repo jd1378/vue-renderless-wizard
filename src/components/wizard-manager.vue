@@ -26,7 +26,8 @@ export default defineComponent({
       validator: (value) => typeof value === 'number' && value >= 0,
     },
     /**
-     * Accessed by `<wizard-step>` component. If set, all the steps are rendered lazily.
+     * Accessed by `<wizard-step>` component. If set, all the steps are rendered lazily. You want to set this to `true` almost always.
+     * Without this, All of the steps will be visible at once.
      */
     lazy: {
       type: Boolean,
