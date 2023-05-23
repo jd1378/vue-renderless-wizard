@@ -131,23 +131,24 @@ defineRender(() => {
   const children =
     // Render content lazily if requested
     (localActive.value || !computedLazy.value) && slots.default
-      ? slots.default({
-          active: localActive.value,
-          currentStep: (wizardManager as any).availableStepProgress,
-          currentStepIndex: (wizardManager as any).currentStep,
-          stepsCount: (wizardManager as any).availableSteps,
-          realStepsCount: (wizardManager as any).stepsCount,
-          next: (wizardManager as any).next,
-          prev: (wizardManager as any).prev,
-          setStep: (wizardManager as any).setStep,
-          reset: (wizardManager as any).reset,
-          hasNext: (wizardManager as any).hasNext,
-          hasPrev: (wizardManager as any).hasPrev,
-          data: (wizardManager as any).wizardData,
-          validating: (wizardManager as any).validating,
-          backwarding: (wizardManager as any).backwarding,
-        })
-      : h(Comment);
+      ? () =>
+          slots.default({
+            active: localActive.value,
+            currentStep: (wizardManager as any).availableStepProgress,
+            currentStepIndex: (wizardManager as any).currentStep,
+            stepsCount: (wizardManager as any).availableSteps,
+            realStepsCount: (wizardManager as any).stepsCount,
+            next: (wizardManager as any).next,
+            prev: (wizardManager as any).prev,
+            setStep: (wizardManager as any).setStep,
+            reset: (wizardManager as any).reset,
+            hasNext: (wizardManager as any).hasNext,
+            hasPrev: (wizardManager as any).hasPrev,
+            data: (wizardManager as any).wizardData,
+            validating: (wizardManager as any).validating,
+            backwarding: (wizardManager as any).backwarding,
+          })
+      : () => h(Comment);
 
   let transition;
   if (typeof props.transition === 'function') {
