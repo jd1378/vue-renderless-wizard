@@ -43,7 +43,7 @@ const props = withDefaults(
      * Data object for passing to render function of 'transition' component.
      * anything in this object will be passed to the render function directly.
      */
-    transition:
+    transition?:
       | TransitionProps
       | ((backwarding: boolean, isActive: boolean) => TransitionProps);
   }>(),
