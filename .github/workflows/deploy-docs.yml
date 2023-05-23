@@ -23,7 +23,9 @@ jobs:
           cache: yarn
       - run: yarn install --frozen-lockfile
       - name: Build
-        run: yarn docs:build
+        run: |
+          yarn vue-docgen -c docgen.config.cjs
+          yarn docs:build
       - uses: actions/configure-pages@v2
       - uses: actions/upload-pages-artifact@v1
         with:
