@@ -1,10 +1,10 @@
 import { mount } from '@vue/test-utils';
 import WizardManager from '../src/components/wizard-manager.vue';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { h, nextTick } from 'vue';
+import { h, Comment, nextTick } from 'vue';
 
 function renderEmpty() {
-  return h();
+  return h(Comment);
 }
 
 describe('wizard-manager', () => {
