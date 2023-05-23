@@ -27,10 +27,10 @@ const props = withDefaults(
      */
     modelValue?: number;
     /**
-     * Accessed by `<wizard-step>` component. If set, all the steps are rendered lazily. You want to set this to `true` almost always.
+     * Accessed by `<wizard-step>` component. If set, all the steps are rendered lazily.
      * Without this, All of the steps will be visible at once.
      *
-     * Default: `true`
+     * Default: `false`
      */
     lazy?: boolean;
     /**
