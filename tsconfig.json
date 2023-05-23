@@ -38,10 +38,12 @@
     "./**/.*", // Hidden dotfiles like .eslintrc.js at any level
     "./**/.*.[tj]s?(x)", // All hidden TS/JS dotfiles
     "./**/*.vue",
-    "*.d.ts"
+    "./**/*.d.ts"
   ],
-  "exclude": ["node_modules", "dist"],
-  "references": [{ "path": "./tsconfig.node.json" }],
+  "exclude": ["node_modules", "dist", "coverage"],
+  "references": [
+    { "path": "./tsconfig.node.json" }
+  ],
   "vueCompilerOptions": {
     "target": 3,
     "plugins": [

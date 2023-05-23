@@ -1,7 +1,5 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
-import typescript from 'rollup-plugin-typescript2';
-import dts from 'vite-plugin-dts';
 import { resolve } from 'path';
 import { existsSync, readdirSync, lstatSync, rmdirSync, unlinkSync } from 'fs';
 // import vueJsx from '@vitejs/plugin-vue-jsx';
@@ -18,22 +16,6 @@ export default defineConfig({
         //vueJsx: vueJsx()
       },
     }),
-    dts({
-      insertTypesEntry: true,
-    }),
-    typescript({
-      check: false,
-      include: ['src/components/**/*.vue'],
-      tsconfigOverride: {
-        compilerOptions: {
-          outDir: 'dist',
-          // sourceMap: true,
-          declaration: true,
-          declarationMap: true,
-        },
-      },
-      exclude: ['vite.config.ts'],
-    }),
   ],
   build: {
     cssCodeSplit: true,
@@ -42,7 +24,16 @@ export default defineConfig({
       entry: 'src/entry.ts',
       name: 'VueRenderlessWizard',
       formats: ['es', 'cjs', 'umd'],
-      fileName: (format) => `VueRenderlessWizard.${format}.js`,
+      fileName(format) {
+        let extension = 'js';
+        if (format === 'es') {
+          extension = 'm' + extension;
+        } else if (format === 'cjs') {
+          extension = 'c' + extension;
+        }
+        const fileName = `vue-renderless-wizard.${format}.${extension}`;
+        return fileName;
+      },
     },
     rollupOptions: {
       // make sure to externalize deps that should not be bundled
@@ -53,7 +44,8 @@ export default defineConfig({
       external: ['vue'],
       output: {
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name === 'main.css') return 'VueRenderlessWizard.css';
+          if (assetInfo.name === 'entry.css')
+            return 'vue-renderless-wizard.css';
           return assetInfo.name as string;
         },
         exports: 'named',

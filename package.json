@@ -5,7 +5,7 @@
   "author": "jd1378",
   "scripts": {
     "serve": "vite",
-    "build": "cross-env NODE_ENV=production vue-tsc && vite build",
+    "build": "cross-env NODE_ENV=production vite build && vue-tsc -p ./tsconfig.vue.json",
     "dev": "npm run serve",
     "preview": "vite preview --port 4173",
     "type-check": "vue-tsc --noEmit",
@@ -20,24 +20,16 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/VueRenderlessWizard.esm.js",
-      "require": "./dist/VueRenderlessWizard.umd.js"
+      "import": "./dist/vue-renderless-wizard.es.mjs",
+      "require": "./dist/vue-renderless-wizard.umd.js"
     },
-    "./cjs": "./dist/VueRenderlessWizard.cjs.js",
-    "./sfc/manager": "./src/components/wizard-manager.vue",
-    "./sfc/step": "./src/components/wizard-step.vue"
+    "./cjs": "./dist/vue-renderless-wizard.cjs.cjs"
   },
-  "types": "./dist/main.d.ts",
-  "main": "dist/VueRenderlessWizard.umd.js",
-  "module": "dist/VueRenderlessWizard.es.js",
+  "types": "./dist/entry.d.ts",
+  "main": "dist/vue-renderless-wizard.umd.js",
+  "module": "dist/vue-renderless-wizard.es.mjs",
   "files": [
-    "dist/*",
-    "src/**/*.vue",
-    "src/**/*.js",
-    "src/**/*.ts",
-    "!src/serve-dev.*",
-    "!src/**/*.test.js",
-    "!src/**/*.spec.js"
+    "dist/*"
   ],
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.59.6",
@@ -68,7 +60,6 @@
     "typescript": "^5.0.4",
     "unplugin-vue-macros": "^2.1.7",
     "vite": "^4.3.8",
-    "vite-plugin-dts": "^2.3.0",
     "vitepress": "^1.0.0-alpha.75",
     "vitest": "^0.31.1",
     "vue": "^3.3.4",
