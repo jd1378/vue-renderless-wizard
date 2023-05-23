@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.3
+
+- fix vue warn (Non-function value encountered for default slot) of wizard-step component
+
 ## 3.0.2
 
 - first release for vue 3 that contains proper types.
