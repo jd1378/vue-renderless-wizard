@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils';
 import WizardManager from '@/components/wizard-manager.vue';
 import WizardStep from '@/components/wizard-step.vue';
 import { describe, it, expect, vi, afterAll, beforeAll } from 'vitest';
-import { h, nextTick } from 'vue';
+import { h, Comment, nextTick } from 'vue';
 
 const cleanupRegex =
   /(\s|\n|\r|<!---->)+|<transition-stub appear="false" persisted="false" css="true">|<\/transition-stub>/gi;
@@ -315,7 +315,7 @@ describe('integration of steps and wizard', () => {
             },
             [h('div', 'step2')]
           ),
-          shouldRemove ? h() : h(WizardStep, [h('div', 'step3')]),
+          shouldRemove ? h(Comment) : h(WizardStep, [h('div', 'step3')]),
         ]);
       }
 
@@ -474,7 +474,7 @@ describe('integration of steps and wizard', () => {
           },
           [h('div', 'step2')]
         ),
-        shouldRemove ? h() : h(WizardStep, [h('div', 'step3')]),
+        shouldRemove ? h(Comment) : h(WizardStep, [h('div', 'step3')]),
       ]);
     }
     wrapper = mount(WizardManager, {
@@ -508,7 +508,7 @@ describe('integration of steps and wizard', () => {
     function renderDefault(props) {
       scopeProps = props || {};
       return h('div', [
-        shouldRemove ? h() : h(WizardStep, [h('div', 'step1')]),
+        shouldRemove ? h(Comment) : h(WizardStep, [h('div', 'step1')]),
         h(
           WizardStep,
           {
