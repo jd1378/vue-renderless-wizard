@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.0.2
+
+- first release for vue 3 that contains proper types.
+
+## 2.0.3
+
+- 1:1 release of package for vue 3
+
 ## 1.0.8
 
 - fix hasPrev not updating
