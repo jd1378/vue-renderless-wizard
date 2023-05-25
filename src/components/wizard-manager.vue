@@ -15,7 +15,6 @@ import {
   onMounted,
   onBeforeUnmount,
   watch,
-  nextTick,
 } from 'vue';
 import type WizardStep from './wizard-step.vue';
 import { ActivateStepEvent } from '../events';
@@ -180,14 +179,11 @@ async function next(bypassValidation = false) {
     }
 
     if (canContinue) {
-      backwarding.value = false;
       if (nextStep.value) {
-        nextTick(() => {
-          const result = activateStep(nextStep.value);
-          if (result) {
-            step.emit('finished', wizardData.value);
-          }
-        });
+        const result = activateStep(nextStep.value);
+        if (result) {
+          step.emit('finished', wizardData.value);
+        }
       } else {
         step.emit('finished', wizardData.value);
         emit('finished', wizardData.value);
@@ -198,10 +194,7 @@ async function next(bypassValidation = false) {
 }
 function prev() {
   if (validating.value) return;
-  backwarding.value = true;
-  nextTick(() => {
-    activateStep(prevStep.value);
-  });
+  activateStep(prevStep.value);
 }
 function setStep(index: number) {
   return activateStep(steps.value[index]);
@@ -218,6 +211,7 @@ function activateStep(step?: typeof WizardStep) {
       emit('activate-step', stepEvent);
 
       if (!stepEvent.defaultPrevented) {
+        backwarding.value = index < currentStep.value;
         currentStep.value = index;
         result = true;
       }
