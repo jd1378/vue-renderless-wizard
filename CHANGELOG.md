@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.0.4
+
+- remove unnecesssary nextTick from wizard managed
+- move backwarding logic to step activation
+
 ## 3.0.3
 
 - fix vue warn (Non-function value encountered for default slot) of wizard-step component
