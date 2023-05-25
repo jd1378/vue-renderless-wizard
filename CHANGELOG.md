@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.5
+
+- update steps before mount
+
 ## 3.0.4
 
 - remove unnecesssary nextTick from wizard managed
