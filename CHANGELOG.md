@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.1.0
+
+- add `steps` to manager scope
+- add `title` prop to wizard step and expose it
+
 ## 3.0.5
 
 - update steps before mount

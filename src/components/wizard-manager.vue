@@ -16,7 +16,7 @@ import {
   onBeforeMount,
   watch,
 } from 'vue';
-import type WizardStep from './wizard-step.vue';
+import type { ExposedStep } from './wizard-step.vue';
 import { ActivateStepEvent } from '../events';
 
 const props = withDefaults(
@@ -76,7 +76,7 @@ const emit = defineEmits<{
 // data
 const currentStep = ref(props.modelValue);
 /** Array of `<wizard-step>` instances, in DOM order */
-const steps = shallowRef([] as (typeof WizardStep)[]);
+const steps = shallowRef([] as ExposedStep[]);
 const wizardData = ref(cloneDeep(props.initialData, {}));
 const validating = ref(false);
 const backwarding = ref(false);
@@ -158,14 +158,14 @@ function updateSteps() {
     currentStep.value = stepIndex;
   }
 }
-function registerStep(step: typeof WizardStep) {
+function registerStep(step: ExposedStep) {
   if (!steps.value.includes(step)) {
     const edited = steps.value.slice();
     edited.push(step);
     steps.value = edited;
   }
 }
-function unregisterStep(step: typeof WizardStep) {
+function unregisterStep(step: ExposedStep) {
   steps.value = steps.value.slice().filter((s) => s !== step);
 }
 async function next(bypassValidation = false) {
@@ -199,7 +199,7 @@ function prev() {
 function setStep(index: number) {
   return activateStep(steps.value[index]);
 }
-function activateStep(step?: typeof WizardStep) {
+function activateStep(step?: ExposedStep) {
   let result = false;
 
   if (step) {
@@ -323,6 +323,8 @@ const slots = defineSlots<{
      *  You have to note though that it can be neither forwarding or backwarding (at the time of accessing this), but for simplicity it's one boolean.
      */
     backwarding: boolean;
+    /** registered steps on wizard manager */
+    steps: ExposedStep[];
   }): any;
 }>();
 
@@ -342,6 +344,7 @@ defineRender(() => {
       data: wizardData.value,
       validating: validating.value,
       backwarding: backwarding.value,
+      steps: steps.value,
     });
   } else {
     return h(Comment);

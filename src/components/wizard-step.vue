@@ -46,6 +46,9 @@ const props = withDefaults(
     transition?:
       | TransitionProps
       | ((backwarding: boolean, isActive: boolean) => TransitionProps);
+
+    /** the title of this step. this can be used to give a title to this step, so to be used later using manager's `steps` scoped slot. */
+    title?: string;
   }>(),
   {
     disabled: false,
@@ -53,6 +56,7 @@ const props = withDefaults(
     lazy: false,
     validate: undefined,
     transition: () => ({}),
+    title: '',
   }
 );
 
@@ -174,6 +178,7 @@ const exposed = {
   lazy: props.lazy,
   transition: props.transition,
   validate: props.validate,
+  title: props.title,
   // data
   localActive,
   // computed
@@ -205,4 +210,6 @@ onBeforeUnmount(() => {
   // Inform `<wizard-manager>` of our departure
   unregisterStep();
 });
+
+export type ExposedStep = typeof exposed;
 </script>
