@@ -12,8 +12,8 @@ import {
   ref,
   shallowRef,
   computed,
-  onMounted,
   onBeforeUnmount,
+  onBeforeMount,
   watch,
 } from 'vue';
 import type WizardStep from './wizard-step.vue';
@@ -275,7 +275,7 @@ watch(currentStep, (newValue) => {
 
 watch(steps, updateSteps);
 
-onMounted(() => {
+onBeforeMount(() => {
   updateSteps();
 });
 
