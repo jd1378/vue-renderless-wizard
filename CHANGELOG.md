@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.1
+
+- expose component props using toRefs
+
 ## 3.1.0
 
 - add `steps` to manager scope
