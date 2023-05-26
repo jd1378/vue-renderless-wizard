@@ -249,7 +249,7 @@ describe('integration of steps and wizard', () => {
               <WizardManager v-model="currentValue" ref="manager" v-on="$attrs" >
                 <div>
                   <WizardStep ref="step1"><div>step1</div></WizardStep>
-                  <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
+                  <WizardStep ref="stepdis" disabled><div>disabledstep</div></WizardStep>
                   <WizardStep ref="step2"><div>step2</div></WizardStep>
                 </div>
               </WizardManager>

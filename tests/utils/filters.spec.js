@@ -1,13 +1,14 @@
 import { notDisabled, disabled } from '@/utils/filters';
 import { it, expect } from 'vitest';
+import { ref } from 'vue';
 
 it('notDisabled()', async () => {
-  const disabledObject = { disabled: true };
+  const disabledObject = { disabled: ref(true) };
   const sampleArray = [
-    { disabled: false },
-    { disabled: false },
+    { disabled: ref(false) },
+    { disabled: ref(false) },
     disabledObject,
-    { disabled: false },
+    { disabled: ref(false) },
   ];
   expect(sampleArray.filter(notDisabled).length).toEqual(3);
   expect(sampleArray.includes(disabledObject)).toEqual(true);
@@ -15,12 +16,12 @@ it('notDisabled()', async () => {
 });
 
 it('disabled()', async () => {
-  const enabledObject = { disabled: false };
+  const enabledObject = { disabled: ref(false) };
   const sampleArray = [
-    { disabled: true },
-    { disabled: true },
+    { disabled: ref(true) },
+    { disabled: ref(true) },
     enabledObject,
-    { disabled: true },
+    { disabled: ref(true) },
   ];
   expect(sampleArray.filter(disabled).length).toEqual(3);
   expect(sampleArray.includes(enabledObject)).toEqual(true);

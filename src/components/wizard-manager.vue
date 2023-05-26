@@ -15,6 +15,7 @@ import {
   onBeforeUnmount,
   onBeforeMount,
   watch,
+  toRefs,
 } from 'vue';
 import type { ExposedStep } from './wizard-step.vue';
 import { ActivateStepEvent } from '../events';
@@ -127,14 +128,14 @@ function updateSteps() {
     steps.value
       .slice()
       .reverse()
-      .find(($step) => $step.localActive.value && !$step.disabled)
+      .find(($step) => $step.localActive.value && !$step.disabled.value)
   );
 
   // Else try setting to `currentStep`
   if (stepIndex < 0) {
     if (
       steps.value[currentStep.value] &&
-      !steps.value[currentStep.value].disabled
+      !steps.value[currentStep.value].disabled.value
     ) {
       // Current step is not disabled
       stepIndex = currentStep.value;
@@ -174,8 +175,8 @@ async function next(bypassValidation = false) {
   if (step) {
     validating.value = true;
     let canContinue = true;
-    if (!bypassValidation && isFunction(step.validate)) {
-      canContinue = await step.validate(wizardData.value);
+    if (!bypassValidation && isFunction(step.validate.value)) {
+      canContinue = await step.validate.value(wizardData.value);
     }
 
     if (canContinue) {
@@ -205,7 +206,7 @@ function activateStep(step?: ExposedStep) {
   if (step) {
     const index = steps.value.indexOf(step);
 
-    if (index !== currentStep.value && !step.disabled) {
+    if (index !== currentStep.value && !step.disabled.value) {
       const stepEvent = new ActivateStepEvent(index, currentStep.value);
 
       emit('activate-step', stepEvent);
@@ -242,7 +243,7 @@ watch(
       oldValue = toInteger(oldValue, 0);
 
       const $step = steps.value[newValue];
-      if ($step && !$step.disabled) {
+      if ($step && !$step.disabled.value) {
         activateStep($step);
       } else {
         // Try next or prev steps
@@ -261,7 +262,7 @@ watch(currentStep, (newValue) => {
 
   // Ensure only one step is active at most
   steps.value.forEach(($step, i) => {
-    if (i === newValue && !$step.disabled) {
+    if (i === newValue && !$step.disabled.value) {
       $step.localActive.value = true;
       index = i;
     } else {
@@ -352,11 +353,9 @@ defineRender(() => {
 });
 
 // for access inside steps and on refs
-const expose = {
+const exposed = {
   // props
-  lazy: props.lazy,
-  initialData: props.initialData,
-  modelValue: props.modelValue,
+  ...toRefs(props),
   // data
   currentStep,
   steps,
@@ -381,6 +380,6 @@ const expose = {
   activateStep,
   reset,
 };
-provide('wizardManager', expose);
-defineExpose(expose);
+provide('wizardManager', exposed);
+defineExpose(exposed);
 </script>

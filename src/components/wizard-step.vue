@@ -10,6 +10,7 @@ import {
   watch,
   onBeforeUnmount,
   withDefaults,
+  toRefs,
 } from 'vue';
 import type { TransitionProps } from 'vue';
 
@@ -81,7 +82,9 @@ const emit = defineEmits<{
 const localActive = ref(props.active);
 
 // computed
-const computedLazy = computed(() => (wizardManager as any).lazy || props.lazy);
+const computedLazy = computed(
+  () => (wizardManager as any).lazy?.value || props.lazy
+);
 
 watch(localActive, (newValue) => {
   // Make `active` prop work with `.sync` modifier
@@ -137,7 +140,7 @@ defineRender(() => {
     (localActive.value || !computedLazy.value) && slots.default
       ? () =>
           slots.default({
-            active: localActive.value,
+            active: localActive as any,
             currentStep: (wizardManager as any).availableStepProgress,
             currentStepIndex: (wizardManager as any).currentStep,
             stepsCount: (wizardManager as any).availableSteps,
@@ -173,12 +176,7 @@ const exposed = {
   unregisterStep,
   emit,
   // props
-  active: props.active,
-  disabled: props.disabled,
-  lazy: props.lazy,
-  transition: props.transition,
-  validate: props.validate,
-  title: props.title,
+  ...toRefs(props),
   // data
   localActive,
   // computed
