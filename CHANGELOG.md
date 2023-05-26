@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.2
+
+- remove `title` prop from wizard step
+
 ## 3.1.1
 
 - expose component props using toRefs

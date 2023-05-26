@@ -47,9 +47,6 @@ const props = withDefaults(
     transition?:
       | TransitionProps
       | ((backwarding: boolean, isActive: boolean) => TransitionProps);
-
-    /** the title of this step. this can be used to give a title to this step, so to be used later using manager's `steps` scoped slot. */
-    title?: string;
   }>(),
   {
     disabled: false,
@@ -57,7 +54,6 @@ const props = withDefaults(
     lazy: false,
     validate: undefined,
     transition: () => ({}),
-    title: '',
   }
 );
 
