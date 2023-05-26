@@ -330,7 +330,7 @@ describe('integration of steps and wizard', () => {
       expect(wrapper.vm.steps.length).toBe(3);
       expect(spy).toHaveBeenCalledTimes(0);
       shouldRemove = true;
-      await nextTick();
+      await wrapper.vm.$forceUpdate();
       expect(wrapper.vm.steps.length).toBe(2);
       expect(spy).toHaveBeenCalledTimes(1);
     });
