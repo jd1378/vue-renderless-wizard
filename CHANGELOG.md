@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.0
+
+- make wizard manager generic
+
 ## 3.1.2
 
 - remove `title` prop from wizard step
