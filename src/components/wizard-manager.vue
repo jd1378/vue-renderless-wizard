@@ -1,7 +1,6 @@
 <script lang="ts" setup generic="T extends object">
 import { toInteger } from '../utils/number';
 import { isFunction } from '../utils/inspect';
-import { cloneDeep } from '../utils/clone-deep';
 import { notDisabled } from '../utils/filters';
 import {
   h,
@@ -34,14 +33,14 @@ const props = withDefaults(
      */
     lazy?: boolean;
     /**
-     * The data that is used as initial data *and* **reset**
+     * The data that is used as initial data *and* **reset**. it should be a reactive object.
      */
-    initialData?: T;
+    reactiveData?: T;
   }>(),
   {
     modelValue: 0,
     lazy: false,
-    initialData: () => ({} as T),
+    reactiveData: () => ({} as T),
   }
 );
 
@@ -52,12 +51,6 @@ const emit = defineEmits<{
    * @property {number} stepIndex - Current selected step index (0-based index)
    */
   (event: 'update:modelValue', index: number): void;
-  /**
-   * Triggered when reset is called and current step is changed to **value** prop successfully. Wizard data is reset to initial data as well.
-   * @event reset
-   * @type {Event}
-   */
-  (event: 'reset'): void;
   /**
    * Emitted when **next()** function has been called, there's no next step remaining and validation for current step has passed.
    * @event finished
@@ -78,7 +71,6 @@ const emit = defineEmits<{
 const currentStep = ref(props.modelValue);
 /** Array of `<wizard-step>` instances, in DOM order */
 const steps = shallowRef([] as ExposedStep[]);
-const wizardData = ref(cloneDeep(props.initialData, {}));
 const validating = ref(false);
 const backwarding = ref(false);
 
@@ -176,18 +168,18 @@ async function next(bypassValidation = false) {
     validating.value = true;
     let canContinue = true;
     if (!bypassValidation && isFunction(step.validate.value)) {
-      canContinue = await step.validate.value(wizardData.value);
+      canContinue = await step.validate.value(props.reactiveData);
     }
 
     if (canContinue) {
       if (nextStep.value) {
         const result = activateStep(nextStep.value);
         if (result) {
-          step.emit('finished', wizardData.value);
+          step.emit('finished', props.reactiveData);
         }
       } else {
-        step.emit('finished', wizardData.value);
-        emit('finished', wizardData.value);
+        step.emit('finished', props.reactiveData);
+        emit('finished', props.reactiveData);
       }
     }
     validating.value = false;
@@ -225,13 +217,6 @@ function activateStep(step?: ExposedStep) {
   }
 
   return result;
-}
-function reset() {
-  setStep(props.modelValue);
-  if (currentStep.value === props.modelValue) {
-    wizardData.value = cloneDeep(props.initialData, {});
-    emit('reset');
-  }
 }
 
 // other
@@ -306,13 +291,11 @@ const slots = defineSlots<{
     prev(): void;
     /** Directly go to a step by index. */
     setStep(index: number): void;
-    /** Emits a `reset` event, restores `initial-data` prop and goes to first step */
-    reset(): void;
     hasNext: boolean;
     hasPrev: boolean;
     /** if a validation check is in progress */
     validating: boolean;
-    /** the wizard data that you can use as your data. */
+    /** the reactive data object has been passed to `reactiveData` prop. */
     data: T;
     /**
      * you can think of it as which direction the wizard is moving.
@@ -339,10 +322,9 @@ defineRender(() => {
       next: next,
       prev: prev,
       setStep: setStep,
-      reset: reset,
       hasNext: hasNext.value,
       hasPrev: hasPrev.value,
-      data: wizardData.value,
+      data: props.reactiveData,
       validating: validating.value,
       backwarding: backwarding.value,
       steps: steps.value,
@@ -359,7 +341,6 @@ const exposed = {
   // data
   currentStep,
   steps,
-  wizardData,
   validating,
   backwarding,
   // computed
@@ -378,7 +359,6 @@ const exposed = {
   prev,
   setStep,
   activateStep,
-  reset,
 };
 provide('wizardManager', exposed);
 defineExpose(exposed);

@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import WizardManager from '../src/components/wizard-manager.vue';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { h, Comment, nextTick } from 'vue';
+import { h, Comment, reactive } from 'vue';
 
 function renderEmpty() {
   return h(Comment);
@@ -62,7 +62,7 @@ describe('wizard-manager', () => {
         default: renderDefault,
       },
       propsData: {
-        initialData: {
+        reactiveData: {
           foo: 'bar',
         },
       },
@@ -92,10 +92,6 @@ describe('wizard-manager', () => {
       expect(scopeProps).toHaveProperty('setStep');
       expect(scopeProps.setStep).toBeInstanceOf(Function);
     });
-    it('has reset function', () => {
-      expect(scopeProps).toHaveProperty('reset');
-      expect(scopeProps.reset).toBeInstanceOf(Function);
-    });
     it('has hasNext prop', () => {
       expect(scopeProps).toHaveProperty('hasNext');
     });
@@ -110,78 +106,6 @@ describe('wizard-manager', () => {
     });
     it('has backwarding prop', () => {
       expect(scopeProps).toHaveProperty('backwarding');
-    });
-
-    describe('reset function', () => {
-      it('emits reset event when successful', async () => {
-        expect(wrapper.emitted().reset).toBeFalsy();
-        scopeProps.reset();
-        await nextTick();
-        expect(wrapper.emitted().reset).toBeTruthy();
-        expect(wrapper.emitted().reset.length).toBe(1);
-      });
-
-      it('resets to initial data when successful', async () => {
-        scopeProps.data.foo = 'rab'; // change data throup scope props
-        scopeProps.reset();
-        await nextTick();
-        expect(scopeProps.data).toStrictEqual({
-          foo: 'bar',
-        });
-      });
-
-      it('does not emit "reset" or set to initialData when failed', async () => {
-        let scopeProps = {};
-
-        function renderDefault(props) {
-          scopeProps = props || {};
-          return h('div', 'manager');
-        }
-
-        const wrapper = mount(WizardManager, {
-          slots: {
-            default: renderDefault,
-          },
-          propsData: {
-            modelValue: 0,
-            initialData: {
-              foo: 'bar',
-            },
-          },
-        });
-
-        wrapper.vm.currentStep = 10;
-        scopeProps.data.foo = 'rab';
-        await nextTick();
-        expect(wrapper.vm.currentStep).toBe(10);
-        expect(wrapper.emitted().reset).toBeFalsy();
-        scopeProps.reset(); // tries to set currentStep to 'value' prop but since the step doesn't exist, it fails.
-        await nextTick();
-        expect(wrapper.emitted().reset).toBeFalsy();
-        // it has failed to reset
-        expect(scopeProps.data).toStrictEqual({
-          foo: 'rab',
-        });
-      });
-    });
-  });
-
-  describe('events', () => {
-    let wrapper;
-
-    beforeEach(() => {
-      wrapper = mount(WizardManager, {
-        slots: {
-          default: renderEmpty,
-        },
-      });
-    });
-
-    it('emits "reset" when reset is called', async () => {
-      wrapper.vm.reset();
-      await nextTick();
-      expect(wrapper.emitted().reset).toBeTruthy();
-      expect(wrapper.emitted().reset.length).toBe(1);
     });
   });
 
@@ -200,7 +124,7 @@ describe('wizard-manager', () => {
       });
     });
 
-    describe('initialData', () => {
+    describe('reactiveData', () => {
       let scopeProps;
       function renderDefault(props) {
         scopeProps = props || {};
@@ -210,10 +134,10 @@ describe('wizard-manager', () => {
       beforeEach(() => {
         mount(WizardManager, {
           propsData: {
-            initialData: {
+            reactiveData: reactive({
               a: 'b',
               c: 'd',
-            },
+            }),
           },
           slots: {
             default: renderDefault,

@@ -887,7 +887,7 @@ describe('integration of steps and wizard', () => {
           {
             ...exampleTwoStepWizard,
             template: `
-              <WizardManager ref="manager" :initialData="initialData" v-on="$attrs" @finished="isFinished = true">
+              <WizardManager ref="manager" :reactiveData="reactiveData" v-on="$attrs" @finished="isFinished = true">
                 <div>
                   <WizardStep ref="step1"><div>step1</div></WizardStep>
                   <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
@@ -899,7 +899,7 @@ describe('integration of steps and wizard', () => {
           {
             data() {
               return {
-                initialData: {
+                reactiveData: {
                   foo: 'bar',
                 },
                 isFinished: false,
@@ -921,7 +921,7 @@ describe('integration of steps and wizard', () => {
           {
             ...exampleTwoStepWizard,
             template: `
-              <WizardManager ref="manager" :initialData="initialData" @finished="finishMock">
+              <WizardManager ref="manager" :reactiveData="reactiveData" @finished="finishMock">
                 <div>
                   <WizardStep ref="step1"><div>step1</div></WizardStep>
                   <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
@@ -933,7 +933,7 @@ describe('integration of steps and wizard', () => {
           {
             data() {
               return {
-                initialData: {
+                reactiveData: {
                   foo: 'bar',
                 },
                 finishMock,
@@ -961,7 +961,7 @@ describe('integration of steps and wizard', () => {
           {
             ...exampleTwoStepWizard,
             template: `
-                <WizardManager ref="manager" v-on="$attrs" :initialData="initialData">
+                <WizardManager ref="manager" v-on="$attrs" :reactiveData="reactiveData">
                   <div>
                     <WizardStep ref="step1"><div>step1</div></WizardStep>
                     <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
@@ -973,7 +973,7 @@ describe('integration of steps and wizard', () => {
           {
             data() {
               return {
-                initialData: {
+                reactiveData: {
                   foo: 'bar',
                 },
                 stepValidation: () => {
@@ -1008,7 +1008,7 @@ describe('integration of steps and wizard', () => {
           {
             ...exampleTwoStepWizard,
             template: `
-                <WizardManager ref="manager" :initialData="initialData">
+                <WizardManager ref="manager" :reactiveData="reactiveData">
                   <div>
                     <WizardStep ref="step1" active v-on="$attrs" @finished="stepFinishMock"><div>step1</div></WizardStep>
                     <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
@@ -1020,7 +1020,7 @@ describe('integration of steps and wizard', () => {
           {
             data() {
               return {
-                initialData: {
+                reactiveData: {
                   foo: 'bar',
                 },
                 finished: undefined,
@@ -1043,7 +1043,7 @@ describe('integration of steps and wizard', () => {
           {
             ...exampleTwoStepWizard,
             template: `
-                <WizardManager ref="manager" :initialData="initialData" >
+                <WizardManager ref="manager" :reactiveData="reactiveData" >
                   <div>
                     <WizardStep ref="step1" active v-on="$attrs" @finished="finishMock"><div>step1</div></WizardStep>
                     <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
@@ -1055,7 +1055,7 @@ describe('integration of steps and wizard', () => {
           {
             data() {
               return {
-                initialData: {
+                reactiveData: {
                   foo: 'bar',
                 },
                 finished: undefined,
@@ -1082,7 +1082,7 @@ describe('integration of steps and wizard', () => {
           {
             ...exampleTwoStepWizard,
             template: `
-                <WizardManager ref="manager" :initialData="initialData">
+                <WizardManager ref="manager" :reactiveData="reactiveData">
                   <div>
                     <WizardStep ref="step1" active :validate="stepValidation" v-on="$attrs"><div>step1</div></WizardStep>
                     <WizardStep ref="stepdis" :disabled="true"><div>disabledstep</div></WizardStep>
@@ -1094,7 +1094,7 @@ describe('integration of steps and wizard', () => {
           {
             data() {
               return {
-                initialData: {
+                reactiveData: {
                   foo: 'bar',
                 },
                 stepValidation: () => {

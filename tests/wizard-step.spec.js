@@ -148,10 +148,6 @@ describe('wizard-step', () => {
       expect(scopeProps).toHaveProperty('setStep');
       expect(scopeProps.setStep).toBeInstanceOf(Function);
     });
-    it('has reset function', () => {
-      expect(scopeProps).toHaveProperty('reset');
-      expect(scopeProps.reset).toBeInstanceOf(Function);
-    });
     it('has hasNext prop', () => {
       expect(scopeProps).toHaveProperty('hasNext');
     });

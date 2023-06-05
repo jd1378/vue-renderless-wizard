@@ -39,7 +39,7 @@ const props = withDefaults(
      * This function must return a promise that resolves to a boolean.
      * if resolved value is `true`, step data is valid and user can move to next step.
      */
-    validate?: (wizardData: object) => boolean;
+    validate?: (wizardData: unknown) => boolean;
     /**
      * Data object for passing to render function of 'transition' component.
      * anything in this object will be passed to the render function directly.
@@ -109,8 +109,6 @@ const slots = defineSlots<{
     prev(): void;
     /** Directly go to a step by index. */
     setStep(index: number): void;
-    /** Emits a `reset` event, restores `initial-data` prop and goes to first step */
-    reset(): void;
     hasNext: boolean;
     hasPrev: boolean;
     /** if a validation check is in progress */
@@ -144,7 +142,6 @@ defineRender(() => {
             next: (wizardManager as any).next,
             prev: (wizardManager as any).prev,
             setStep: (wizardManager as any).setStep,
-            reset: (wizardManager as any).reset,
             hasNext: (wizardManager as any).hasNext,
             hasPrev: (wizardManager as any).hasPrev,
             data: (wizardManager as any).wizardData,

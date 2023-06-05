@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.0.0
+
+- change `initialData` to `reactiveData`
+- remove `reset` event and function as a result
+- reactiveData is passed as is to scope
+
 ## 3.2.0
 
 - make wizard manager generic
