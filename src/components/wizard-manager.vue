@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script lang="ts" setup generic="T extends object">
 import { toInteger } from '../utils/number';
 import { isFunction } from '../utils/inspect';
 import { cloneDeep } from '../utils/clone-deep';
@@ -36,12 +36,12 @@ const props = withDefaults(
     /**
      * The data that is used as initial data *and* **reset**
      */
-    initialData?: object;
+    initialData?: T;
   }>(),
   {
     modelValue: 0,
     lazy: false,
-    initialData: () => ({}),
+    initialData: () => ({} as T),
   }
 );
 
@@ -313,7 +313,7 @@ const slots = defineSlots<{
     /** if a validation check is in progress */
     validating: boolean;
     /** the wizard data that you can use as your data. */
-    data: object;
+    data: T;
     /**
      * you can think of it as which direction the wizard is moving.
      *
