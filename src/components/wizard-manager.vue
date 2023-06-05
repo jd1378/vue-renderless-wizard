@@ -15,6 +15,7 @@ import {
   onBeforeMount,
   watch,
   toRefs,
+  reactive,
 } from 'vue';
 import type { ExposedStep } from './wizard-step.vue';
 import { ActivateStepEvent } from '../events';
@@ -40,7 +41,7 @@ const props = withDefaults(
   {
     modelValue: 0,
     lazy: false,
-    reactiveData: () => ({} as T),
+    reactiveData: () => reactive({}) as T,
   }
 );
 
